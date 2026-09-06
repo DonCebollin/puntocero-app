@@ -5,11 +5,17 @@
 CREATE DATABASE IF NOT EXISTS puntocero CHARACTER SET utf8mb4;
 USE puntocero;
 
+CREATE TABLE IF NOT EXISTS zonas (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  nombre VARCHAR(50) NOT NULL UNIQUE
+);
+
 CREATE TABLE IF NOT EXISTS mesas (
   id INT AUTO_INCREMENT PRIMARY KEY,
   numero INT NOT NULL,
-  sector ENUM('terraza', 'interior', 'barra') NOT NULL,
-  estado ENUM('libre', 'ocupada', 'por_cobrar') NOT NULL DEFAULT 'libre'
+  zona_id INT NOT NULL,
+  estado ENUM('libre', 'ocupada', 'por_cobrar') NOT NULL DEFAULT 'libre',
+  FOREIGN KEY (zona_id) REFERENCES zonas(id)
 );
 
 CREATE TABLE IF NOT EXISTS pedidos (
@@ -30,10 +36,10 @@ CREATE TABLE IF NOT EXISTS items_pedido (
   FOREIGN KEY (pedido_id) REFERENCES pedidos(id)
 );
 
--- Datos de ejemplo: 16 mesas físicas según lo definido en la propuesta
--- (7 en terraza, 9 en interior), más el sector de barra.
-INSERT INTO mesas (numero, sector) VALUES
-  (1, 'terraza'), (2, 'terraza'), (3, 'terraza'), (4, 'terraza'),
-  (5, 'terraza'), (6, 'terraza'), (7, 'terraza'),
-  (8, 'interior'), (9, 'interior'), (10, 'interior'), (11, 'interior'),
-  (12, 'interior'), (13, 'interior'), (14, 'interior'), (15, 'interior'), (16, 'interior');
+INSERT INTO zonas (nombre) VALUES ('Terraza'), ('Interior'), ('Salón Trasero'), ('Barra');
+
+-- 21 mesas físicas: 7 terraza, 9 interior, 5 salón trasero
+INSERT INTO mesas (numero, zona_id) VALUES
+  (1, 1), (2, 1), (3, 1), (4, 1), (5, 1), (6, 1), (7, 1),
+  (8, 2), (9, 2), (10, 2), (11, 2), (12, 2), (13, 2), (14, 2), (15, 2), (16, 2),
+  (17, 3), (18, 3), (19, 3), (20, 3), (21, 3);
