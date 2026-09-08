@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { Server } from "socket.io";
-import { crearMesasController } from "../controllers/mesas.controller";
+import { crearMesasController } from "../controller/mesas.controller";
 
 export function mesasRoutes(io: Server): Router {
     const router = Router();

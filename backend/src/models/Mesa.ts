@@ -37,7 +37,7 @@ export async function actualizarEstadoMesa (
     estado: EstadoMesa,
 ): Promise<void> {
     await pool.query<ResultSetHeader>(
-        "UPDATE mesa SET estado = ? WHERE id = ?",
+        "UPDATE mesas SET estado = ? WHERE id = ?",
         [estado, id]
     );
 }   

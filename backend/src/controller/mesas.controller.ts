@@ -22,7 +22,7 @@ export function crearMesasController(io: Server) {
                 await MesaModel.actualizarEstadoMesa(Number(id), (estado));
                 const mesaActualizada = await MesaModel.obtenerMesasPorId(Number(id));
 
-                io.emit("Mesa Actualizada", mesaActualizada);
+                io.emit("mesa:actualizada", mesaActualizada);
                 res.json(mesaActualizada);
             } catch (error){
                 console.error(error);
