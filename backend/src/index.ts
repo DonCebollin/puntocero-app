@@ -6,6 +6,7 @@ import dotenv from "dotenv";
 
 import { verificarConexionBD } from "./config/database";
 import { mesasRoutes } from "./routes/mesas.routes";
+import { zonasRoutes } from "./routes/zonas.routes";
 
 dotenv.config();
 
@@ -24,6 +25,7 @@ app.get("/", (req, res) => {
 });
 
 app.use("/api/mesas", mesasRoutes(io));
+app.use("/api/zonas", zonasRoutes());
 
 const PUERTO = process.env.PORT || 3000;
 

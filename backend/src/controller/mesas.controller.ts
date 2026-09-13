@@ -1,4 +1,4 @@
-import e, { Request, Response } from "express";
+import { Request, Response } from "express";
 import * as MesaModel from "../models/Mesa";
 import { Server } from "socket.io";
 
@@ -14,6 +14,8 @@ export function crearMesasController(io: Server) {
             }
         },
 
+        
+
         async actualizarEstado(req: Request, res: Response) {
             try{
                 const { id } = req.params;
@@ -28,8 +30,22 @@ export function crearMesasController(io: Server) {
                 console.error(error);
                 res.status(500).json({ error: "Error al actualizar la mesa"})
             }
-        }
-
+        },
         
+        async crear(req: Request, res: Response) {
+            try {
+                const { numero, zona_id } = req.body;
+                const id = await MesaModel.crearMesa(numero, zona_id);
+
+                const mesaCreada = await MesaModel.obtenerMesasPorId(id);
+                io.emit("mesa:actualizada", mesaCreada);
+                res.status(201).json(mesaCreada);
+        } catch (error) {
+                console.error(error);
+            res.status(500).json({ error: "Error al crear la mesa" });
+            }
+        },
     }
+
+    
 }

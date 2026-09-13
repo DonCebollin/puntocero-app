@@ -41,3 +41,11 @@ export async function actualizarEstadoMesa (
         [estado, id]
     );
 }   
+
+export async function crearMesa(numero: number, zona_id: number): Promise<number> {
+    const [resultado] = await pool.query<ResultSetHeader>(
+        "INSERT INTO mesas (numero, zona_id, estado) VALUES (?, ?, 'libre')",
+        [numero, zona_id]
+    );
+    return resultado.insertId;
+}
