@@ -26,3 +26,24 @@ export async function actualizarEstadoMesa(
   if (!respuesta.ok) throw new Error("No se pudo actualizar la mesa");
   return respuesta.json();
 }
+
+export interface Zona {
+  id: number;
+  nombre: string;
+}
+
+export async function obtenerZonas(): Promise<Zona[]> {
+  const respuesta = await fetch(`${BACKEND_URL}/api/zonas`);
+  if (!respuesta.ok) throw new Error("No se pudieron obtener las zonas");
+  return respuesta.json();
+}
+
+export async function crearMesa(numero: number, zona_id: number): Promise<Mesa> {
+  const respuesta = await fetch(`${BACKEND_URL}/api/mesas`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ numero, zona_id }),
+  });
+  if (!respuesta.ok) throw new Error("No se pudo crear la mesa");
+  return respuesta.json();
+}

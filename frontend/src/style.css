@@ -1,1 +1,10 @@
 @import "tailwindcss";
+
+@theme {
+  --color-superficie: #0b1326;
+  --color-tarjeta: #171f33;
+  --color-tarjeta-hover: #222a3d;
+  --color-libre: #10b981;
+  --color-ocupada: #f97316;
+  --color-porcobrar: #f59e0b;
+}
