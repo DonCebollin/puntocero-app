@@ -49,3 +49,15 @@ export async function crearMesa(numero: number, zona_id: number): Promise<number
     );
     return resultado.insertId;
 }
+
+export async function eliminarMesa(id: number): Promise<void> {
+    await pool.query<ResultSetHeader>("DELETE FROM mesas WHERE id = ?", [id]);
+}
+
+export async function existeNumeroMesa(numero: number): Promise<boolean> {
+    const [filas] = await pool.query<RowDataPacket[]>(
+        "SELECT id FROM mesas WHERE numero = ?",
+        [numero]
+    );
+    return filas.length > 0;
+}

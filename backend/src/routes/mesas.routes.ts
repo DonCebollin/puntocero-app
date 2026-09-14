@@ -9,6 +9,7 @@ export function mesasRoutes(io: Server): Router {
     router.get("/", controller.listar);
     router.patch("/:id/estado", controller.actualizarEstado);
     router.post("/", controller.crear);
+    router.delete("/:id", controller.eliminar);
     
     return router;
 }
