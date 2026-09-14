@@ -12,7 +12,7 @@ CREATE TABLE IF NOT EXISTS zonas (
 
 CREATE TABLE IF NOT EXISTS mesas (
   id INT AUTO_INCREMENT PRIMARY KEY,
-  numero INT NOT NULL,
+  numero INT NOT NULL UNIQUE,,
   zona_id INT NOT NULL,
   estado ENUM('libre', 'ocupada', 'por_cobrar') NOT NULL DEFAULT 'libre',
   FOREIGN KEY (zona_id) REFERENCES zonas(id)
