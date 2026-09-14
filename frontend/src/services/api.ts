@@ -47,3 +47,11 @@ export async function crearMesa(numero: number, zona_id: number): Promise<Mesa> 
   if (!respuesta.ok) throw new Error("No se pudo crear la mesa");
   return respuesta.json();
 }
+
+export async function eliminarMesa(id: number): Promise<void> {
+  const respuesta = await fetch(`${BACKEND_URL}/api/mesas/${id}`, { method: "DELETE" });
+  if (!respuesta.ok) {
+    const data = await respuesta.json().catch(() => ({}));
+    throw new Error(data.error || "No se pudo eliminar la mesa");
+  }
+}

@@ -1,4 +1,4 @@
-import { obtenerMesas, actualizarEstadoMesa, obtenerZonas, crearMesa, Mesa, Zona } from "../services/api";
+import { obtenerMesas, actualizarEstadoMesa, obtenerZonas, crearMesa, eliminarMesa, Mesa, Zona } from "../services/api";
 import { socket } from "../services/socket";
 
 const colorBorde: Record<Mesa ["estado"], string> = {
@@ -106,7 +106,7 @@ export async function renderPantallaSalon(contenedor: HTMLElement): Promise<void
       formularioContainer.innerHTML = "";
     }
   });
-  
+
   function pintarMesasPorZona(mesas: Mesa[]) {
     const mesasPorZona = new Map<string, Mesa[]>();
     for (const mesa of mesas) {
@@ -129,8 +129,9 @@ export async function renderPantallaSalon(contenedor: HTMLElement): Promise<void
             <button
               data-id="${mesa.id}"
               data-estado="${mesa.estado}"
-              class="mesa-btn bg-tarjeta hover:bg-tarjeta-hover border-l-4 ${colorBorde[mesa.estado]} rounded-lg p-4 text-left transition"
+              class="mesa-btn relative bg-tarjeta hover:bg-tarjeta-hover border-l-4 ${colorBorde[mesa.estado]} rounded-lg p-4 text-left transition"
             >
+              <span data-eliminar-id="${mesa.id}" data-eliminar-numero="${mesa.numero}" class="btn-eliminar absolute top-1 right-2 text-gray-500 hover:text-red-400 text-sm">✕</span>
               <div class="text-2xl font-bold text-white mb-2">${mesa.numero}</div>
               <span class="inline-block text-xs font-semibold px-2 py-1 rounded-full ${colorBadge[mesa.estado]}">
                 ${textoEstado[mesa.estado]}
@@ -140,7 +141,7 @@ export async function renderPantallaSalon(contenedor: HTMLElement): Promise<void
             )
             .join("")}
         </div>
-      `;
+      `;  
       zonasContainer.appendChild(seccion);
     }
 
@@ -150,6 +151,21 @@ export async function renderPantallaSalon(contenedor: HTMLElement): Promise<void
         const estadoActual = boton.dataset.estado as Mesa["estado"];
         await actualizarEstadoMesa(id, siguienteEstado[estadoActual]);
         });
+    });
+
+    zonasContainer.querySelectorAll<HTMLSpanElement>(".btn-eliminar").forEach((span) => {
+      span.addEventListener("click", async (evento) => {
+        evento.stopPropagation();
+        const id = Number(span.dataset.eliminarId);
+        const numero = span.dataset.eliminarNumero;
+        if (!confirm(`¿Eliminar la mesa ${numero}? Esta acción no se puede deshacer.`)) return;
+        try {
+          await eliminarMesa(id);
+          cargarMesas();
+        } catch (error: any) {
+          alert(error.message);
+        }
+      });
     });
 }
 
