@@ -7,6 +7,7 @@ import dotenv from "dotenv";
 import { verificarConexionBD } from "./config/database";
 import { mesasRoutes } from "./routes/mesas.routes";
 import { zonasRoutes } from "./routes/zonas.routes";
+import { empleadosRoutes } from "./routes/empleados.routes";
 
 dotenv.config();
 
@@ -26,6 +27,7 @@ app.get("/", (req, res) => {
 
 app.use("/api/mesas", mesasRoutes(io));
 app.use("/api/zonas", zonasRoutes());
+app.use("/api/empleados", empleadosRoutes());
 
 const PUERTO = process.env.PORT || 3000;
 
