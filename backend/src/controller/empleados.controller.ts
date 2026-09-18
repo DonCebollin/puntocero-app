@@ -43,6 +43,11 @@ export const empleadoController = {
                 return res.status(401).json({ error: "Usuario o contraseña incorrectos"});
             }
 
+            const passwordCorrecta = await EmpleadoModel.verificarPassword(password, empleado.password_hash);
+            if(!passwordCorrecta){
+                return res.status(401).json({ error: "Usuario o contraseña incorrecta"});
+            }
+
             const token = jwt.sign(
                 {id: empleado.id, usuario: empleado.usuario, rol: empleado.rol },
                 JWT_SECRET,
