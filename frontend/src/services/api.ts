@@ -1,4 +1,5 @@
 import { BACKEND_URL } from "./config";
+import { obtenerToken, cerrarSesion } from "./auth";
 
 export interface Mesa {
     id: number;
@@ -6,6 +7,30 @@ export interface Mesa {
     zona_id: number;
     zona_nombre: string,
     estado: "libre" | "ocupada" | "por_cobrar";
+}
+
+function headersConToken(): HeadersInit {
+  const token = obtenerToken();
+  return {
+    "Content-Type": "application/json",
+    ...(token ? { Authorization: `Bearer ${token}` } : {}),
+  };
+}
+
+//Revisa si la respuesta fue un 401 (Token invalido), de ser asi cierra 
+//sesion local automaticamente.
+
+async function manejarRespuesta(respuesta: Response) {
+  if (respuesta.status === 401) {
+    cerrarSesion();
+    window.location.reload();
+    throw new Error("Sesion expirada, inicia sesion de nuevo");
+  }
+  if(!respuesta.ok) {
+    const data = await respuesta.json().catch(() => ({}));
+    throw new Error(data.error || "Ocurrio un error inesperado");
+  }
+  return respuesta.json();
 }
 
 export async function obtenerMesas(): Promise<Mesa[]> {
