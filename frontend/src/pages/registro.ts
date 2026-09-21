@@ -1,10 +1,14 @@
 import { BACKEND_URL } from "../services/config";
 
-export function renderPantallaRegistro(contenedor: HTMLElement, alRegistrar: () => void): void {
+export function renderPantallaRegistro(
+  contenedor: HTMLElement,
+  alRegistrar: () => void,
+  alQuererIniciarSesion: () => void
+): void {
   contenedor.innerHTML = `
     <div class="min-h-screen bg-superficie flex items-center justify-center p-4">
       <div class="bg-tarjeta rounded-lg p-6 w-full max-w-sm">
-        <h1 class="text-2xl font-bold text-white mb-6 text-center">Crear cuenta</h1>
+         <img src="/logo.png" alt="Punto Cero" class="w-24 h-24 mx-auto mb-4" />
 
         <div id="error-registro" class="hidden bg-red-500/20 text-red-400 text-sm rounded p-2 mb-4"></div>
 
@@ -39,9 +43,11 @@ export function renderPantallaRegistro(contenedor: HTMLElement, alRegistrar: () 
   const inputUsuario = contenedor.querySelector("#input-usuario") as HTMLInputElement;
   const inputPassword = contenedor.querySelector("#input-password") as HTMLInputElement;
   const selectRol = contenedor.querySelector("#select-rol") as HTMLSelectElement;
+  const btnIrLogin = contenedor.querySelector("#btn-ir-login") as HTMLButtonElement;
   const btnRegistrar = contenedor.querySelector("#btn-registrar") as HTMLButtonElement;
   const errorDiv = contenedor.querySelector("#error-registro") as HTMLElement;
 
+  btnIrLogin.addEventListener("click", alQuererIniciarSesion);
   btnRegistrar.addEventListener("click", async () => {
     const nombre = inputNombre.value.trim();
     const usuario = inputUsuario.value.trim();

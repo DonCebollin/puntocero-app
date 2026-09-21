@@ -1,5 +1,6 @@
 import { obtenerMesas, actualizarEstadoMesa, obtenerZonas, crearMesa, eliminarMesa, Mesa, Zona } from "../services/api";
 import { socket } from "../services/socket";
+import { cerrarSesion } from "../services/auth";
 
 const colorBorde: Record<Mesa ["estado"], string> = {
   libre: "border-libre",
@@ -26,22 +27,33 @@ const siguienteEstado: Record<Mesa["estado"], Mesa["estado"]> = {
 };
 
 export async function renderPantallaSalon(contenedor: HTMLElement): Promise<void> {
-  contenedor.innerHTML = `
+    contenedor.innerHTML = `
     <div class="min-h-screen bg-superficie p-4">
       <div class="flex items-center justify-between mb-4">
         <h1 class="text-2xl font-bold text-white">Punto Cero — Plano de Salón</h1>
-        <button id="btn-agregar-mesa" class="bg-libre text-white text-sm font-semibold px-4 py-2 rounded-lg hover:opacity-90 transition">
-          + Agregar Mesa
-        </button>
+        <div class="flex gap-2">
+          <button id="btn-agregar-mesa" class="bg-libre text-white text-sm font-semibold px-4 py-2 rounded-lg hover:opacity-90 transition">
+            + Agregar Mesa
+          </button>
+          <button id="btn-cerrar-sesion" class="bg-gray-600 text-white text-sm font-semibold px-4 py-2 rounded-lg hover:opacity-90 transition">
+            Cerrar sesión
+          </button>
+        </div>
       </div>
       <div id="formulario-container"></div>
       <div id="zonas-container"></div>
     </div>
   `;
+    
 
   const zonasContainer = contenedor.querySelector("#zonas-container") as HTMLElement;
   const formularioContainer = contenedor.querySelector("#formulario-container") as HTMLElement;
   const btnAgregar = contenedor.querySelector("#btn-agregar-mesa") as HTMLButtonElement;
+  const btnCerrarSesion = contenedor.querySelector("#btn-cerrar-sesion") as HTMLButtonElement;
+  btnCerrarSesion.addEventListener("click", () => {
+    cerrarSesion();
+    window.location.reload();
+  });
 
   let zonasDisponibles: Zona[] = [];
 

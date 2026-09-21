@@ -34,9 +34,10 @@ async function manejarRespuesta(respuesta: Response) {
 }
 
 export async function obtenerMesas(): Promise<Mesa[]> {
-    const respuesta = await fetch(`${BACKEND_URL}/api/mesas`);
-    if(!respuesta.ok) throw new Error("No se pudo obtener el listado de mesas");
-    return respuesta.json();
+    const respuesta = await fetch(`${BACKEND_URL}/api/mesas`, {
+      headers: headersConToken(),
+    });
+    return manejarRespuesta(respuesta);
 }
 
 export async function actualizarEstadoMesa(
@@ -45,11 +46,10 @@ export async function actualizarEstadoMesa(
 ): Promise<Mesa> {
   const respuesta = await fetch(`${BACKEND_URL}/api/mesas/${id}/estado`, {
     method: "PATCH",
-    headers: { "Content-Type": "application/json" },
+    headers: headersConToken(),
     body: JSON.stringify({ estado }),
   });
-  if (!respuesta.ok) throw new Error("No se pudo actualizar la mesa");
-  return respuesta.json();
+  return manejarRespuesta(respuesta);
 }
 
 export interface Zona {
@@ -58,23 +58,26 @@ export interface Zona {
 }
 
 export async function obtenerZonas(): Promise<Zona[]> {
-  const respuesta = await fetch(`${BACKEND_URL}/api/zonas`);
-  if (!respuesta.ok) throw new Error("No se pudieron obtener las zonas");
-  return respuesta.json();
+  const respuesta = await fetch(`${BACKEND_URL}/api/zonas`, {
+    headers: headersConToken(),
+  });
+  return manejarRespuesta(respuesta);
 }
 
 export async function crearMesa(numero: number, zona_id: number): Promise<Mesa> {
   const respuesta = await fetch(`${BACKEND_URL}/api/mesas`, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: headersConToken(),
     body: JSON.stringify({ numero, zona_id }),
   });
-  if (!respuesta.ok) throw new Error("No se pudo crear la mesa");
-  return respuesta.json();
+    return manejarRespuesta(respuesta);
 }
 
 export async function eliminarMesa(id: number): Promise<void> {
-  const respuesta = await fetch(`${BACKEND_URL}/api/mesas/${id}`, { method: "DELETE" });
+   const respuesta = await fetch(`${BACKEND_URL}/api/mesas/${id}`, {
+    method: "DELETE",
+    headers: headersConToken(),
+  });
   if (!respuesta.ok) {
     const data = await respuesta.json().catch(() => ({}));
     throw new Error(data.error || "No se pudo eliminar la mesa");
