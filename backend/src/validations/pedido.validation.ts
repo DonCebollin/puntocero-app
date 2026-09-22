@@ -1,7 +1,7 @@
 import { z } from "zod";
 
 export const crearPedidoSchema = z.object({
-    mesas_id: z.number().int().positive,
+    mesa_id: z.number().int().positive(),
     items: z
       .array(
         z.object({

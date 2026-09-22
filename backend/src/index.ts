@@ -9,6 +9,7 @@ import { mesasRoutes } from "./routes/mesas.routes";
 import { zonasRoutes } from "./routes/zonas.routes";
 import { empleadosRoutes } from "./routes/empleados.routes";
 import { productosRoutes } from "./routes/productos.routes";
+import { pedidosRoutes } from "./routes/pedidos.routes";
 
 dotenv.config();
 
@@ -30,6 +31,7 @@ app.use("/api/mesas", mesasRoutes(io));
 app.use("/api/zonas", zonasRoutes());
 app.use("/api/empleados", empleadosRoutes());
 app.use("/api/productos", productosRoutes());
+app.use("/api/pedidos", pedidosRoutes(io));
 
 const PUERTO = process.env.PORT || 3000;
 
