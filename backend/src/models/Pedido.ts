@@ -74,3 +74,20 @@ export async function obtenerPedidoPorId(id: number): Promise<Pedido | null > {
 
     return { ...pedido, items } as Pedido;
 }
+
+export async function obtenerPedidosPorMesa(mesaId: number): Promise<Pedido[]> {
+    const [filasPedidos] = await pool.query<RowDataPacket[]>(
+        "SELECT id, mesa_id, creado_en FROM pedidos WHERE mesa_id = ? ORDER BY creado_en ASC",
+        [mesaId]
+    );
+
+    const pedidos: Pedido[] = [];
+        for (const fila of filasPedidos) {
+    const [items] = await pool.query<RowDataPacket[]>(
+        "SELECT id, producto, estacion, cantidad, precio FROM items_pedido WHERE pedido_id = ?",
+        [fila.id]
+    );
+    pedidos.push({ ...fila, items } as Pedido);
+}
+    return pedidos;
+}

@@ -8,6 +8,7 @@ export function pedidosRoutes(io: Server): Router {
     const controller = crearPedidosController(io);
 
     router.post("/", verificarToken, controller.crear);
+    router.get("/mesa/:mesaId", verificarToken, controller.obtenerPorMesa);
     router.get("/:id", verificarToken, controller.obtener);
 
     return router;

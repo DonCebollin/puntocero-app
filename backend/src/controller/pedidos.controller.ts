@@ -38,17 +38,28 @@ export function crearPedidosController(io: Server) {
       }
     },
     
+    async obtenerPorMesa(req: Request, res: Response) {
+      try {
+        const { mesaId } = req.params;
+        const pedidos = await PedidoModel.obtenerPedidosPorMesa(Number(mesaId));
+        res.json(pedidos);
+      } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: "Error al obtener los pedidos de la mesa" });
+  }
+
+},
     async obtener(req: Request, res: Response) {
-        try {
-            const { id } = req.params;
-            const pedido = await PedidoModel.obtenerPedidoPorId(Number(id));
+      try {
+          const { id } = req.params;
+          const pedido = await PedidoModel.obtenerPedidoPorId(Number(id));
 
-            if(!pedido) {
-                return res.status(404).json({ error: "Pedido no encontrado"});
-            }
+          if(!pedido) {
+              return res.status(404).json({ error: "Pedido no encontrado"});
+          }
 
-            res.json(pedido);
-        } catch (error) {
+          res.json(pedido);
+      } catch (error) {
             console.error(error);
             res.status(500).json({ error: "Error al obtener el pedido"});
         }
