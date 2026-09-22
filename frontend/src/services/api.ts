@@ -83,3 +83,41 @@ export async function eliminarMesa(id: number): Promise<void> {
     throw new Error(data.error || "No se pudo eliminar la mesa");
   }
 }
+
+
+export interface Producto {
+  id: Number;
+  nombre: string;
+  precio: number;
+  categoria: "comida" | "bebida";
+  estacion: "cocina" | "barra";
+  disponible : boolean;
+}
+
+export async function obtenerProductos(): Promise<Producto[]> {
+  const respuesta = await fetch(`${BACKEND_URL}/api/productos`, {
+    headers: headersConToken(),
+  });
+  return manejarRespuesta(respuesta);
+}
+
+export interface ItemPedidoEntrada {
+  producto_id: number;
+  cantidad: number;
+}
+
+export async function crearPedido(mesaId: number, items: ItemPedidoEntrada[]) {
+  const respuesta = await fetch(`${BACKEND_URL}/api/pedidos`, {
+    method: "POST",
+    headers: headersConToken(),
+    body: JSON.stringify({ mesa_id: mesaId, items}),
+  });
+  return manejarRespuesta(respuesta);
+}
+
+export async function obtenerPedidosPorMesa(mesaId: number) {
+  const respuesta = await fetch(`${BACKEND_URL}/api/pedidos/mesa/${mesaId}`, {
+    headers: headersConToken(),
+  });
+  return manejarRespuesta(respuesta);
+}

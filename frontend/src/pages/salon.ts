@@ -1,6 +1,7 @@
 import { obtenerMesas, actualizarEstadoMesa, obtenerZonas, crearMesa, eliminarMesa, Mesa, Zona } from "../services/api";
 import { socket } from "../services/socket";
 import { cerrarSesion } from "../services/auth";
+import { renderPantallaPedido } from "./pedido";
 
 const colorBorde: Record<Mesa ["estado"], string> = {
   libre: "border-libre",
@@ -111,7 +112,7 @@ export async function renderPantallaSalon(contenedor: HTMLElement): Promise<void
     pintarMesasPorZona(mesas);
   }
 
-   btnAgregar.addEventListener("click", () => {
+  btnAgregar.addEventListener("click", () => {
     if (formularioContainer.innerHTML.trim() === "") {
       mostrarFormulario();
     } else {
@@ -160,8 +161,9 @@ export async function renderPantallaSalon(contenedor: HTMLElement): Promise<void
     zonasContainer.querySelectorAll<HTMLButtonElement>(".mesa-btn").forEach((boton) => {
     boton.addEventListener("click", async () => {
         const id = Number(boton.dataset.id);
-        const estadoActual = boton.dataset.estado as Mesa["estado"];
-        await actualizarEstadoMesa(id, siguienteEstado[estadoActual]);
+        const mesa = mesas.find((m) => m.id === id)
+        if (!mesa) return;
+        renderPantallaPedido(contenedor, mesa, () => renderPantallaSalon(contenedor));  
         });
     });
 
