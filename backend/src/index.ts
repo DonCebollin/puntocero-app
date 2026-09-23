@@ -38,10 +38,3 @@ app.use(express.static(path.join(__dirname, "../../frontend/dist")));
 app.get(/^(?!\/api).*/, (req, res) => {
   res.sendFile(path.join(__dirname, "../../frontend/dist/index.html"));
 });
-
-const PUERTO = process.env.PORT || 3000;
-
-servidorHttp.listen(PUERTO, () => {
-  console.log(`Servidor backend escuchando en el puerto ${PUERTO}`);
-  verificarConexionBD();
-});
