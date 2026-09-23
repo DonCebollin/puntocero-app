@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import { Server } from "socket.io";
 import * as PedidoModel from "../models/Pedido";
 import { crearPedidoSchema } from "../validations/pedido.validation";
+import * as MesaModel from "../models/Mesa";
 
 export function crearPedidosController(io: Server) {
   return {
@@ -10,7 +11,6 @@ export function crearPedidosController(io: Server) {
       if (!resultado.success) {
         return res.status(400).json({ error: resultado.error.issues });
       }
-
       try {
         const { mesa_id, items } = resultado.data;
 
@@ -21,14 +21,16 @@ export function crearPedidosController(io: Server) {
           return res.status(500).json({ error: "El pedido se creó pero no se pudo recuperar" });
         }
 
+        const mesa = await MesaModel.obtenerMesasPorId(pedido.mesa_id);
+
         const itemsCocina = pedido.items.filter((item) => item.estacion === "cocina");
         const itemsBarra = pedido.items.filter((item) => item.estacion === "barra");
 
         if (itemsCocina.length > 0) {
-          io.emit("pedido:nuevo:cocina", { pedidoId: pedido.id, mesaId: pedido.mesa_id, items: itemsCocina });
+          io.emit("pedido:nuevo:cocina", { pedidoId: pedido.id, mesaId: pedido.mesa_id, mesaNumero: mesa?.numero, items: itemsCocina });
         }
         if (itemsBarra.length > 0) {
-          io.emit("pedido:nuevo:barra", { pedidoId: pedido.id, mesaId: pedido.mesa_id, items: itemsBarra });
+          io.emit("pedido:nuevo:barra", { pedidoId: pedido.id, mesaId: pedido.mesa_id, mesaNumero: mesa?.numero, items: itemsBarra });
         }
 
         res.status(201).json(pedido);
