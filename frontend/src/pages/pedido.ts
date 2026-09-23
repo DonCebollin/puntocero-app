@@ -1,6 +1,6 @@
 
-import { obtenerProductos, crearPedido, actualizarEstadoMesa, obtenerPedidosPorMesa, Producto, Mesa } from "../services/api";
-
+import { obtenerProductos, crearPedido, actualizarEstadoMesa, obtenerPedidosPorMesa, cerrarCuenta,  Mesa } from "../services/api";
+import { mostrarConfirmacion, mostrarNotificacion } from "../services/ui";
 
 export async function renderPantallaPedido(
     contenedor: HTMLElement,
@@ -31,6 +31,9 @@ export async function renderPantallaPedido(
         <button id="btn-enviar" class="bg-libre text-white font-semibold w-full py-2 rounded-lg mt-4 hover:opacity-90 transition">
         Enviar Pedido
         </button>
+        <button id="btn-cerrar-cuenta" class="bg-porcobrar text-white font-semibold w-full py-2 rounded-lg mt-2 hover:opacity-90 transition">
+        Cerrar Cuenta y Cobrar
+        </button>
     </div>
     </div>
 `;
@@ -40,8 +43,10 @@ export async function renderPantallaPedido(
     const totalPedido = contenedor.querySelector("#total-pedido") as HTMLElement;
     const btnVolver = contenedor.querySelector("#btn-volver") as HTMLButtonElement;
     const btnEnviar = contenedor.querySelector("#btn-enviar") as HTMLButtonElement;
+    const btnCerrarCuenta = contenedor.querySelector("#btn-cerrar-cuenta") as HTMLButtonElement;
     const tabCocina = contenedor.querySelector("#tab-cocina") as HTMLButtonElement;
     const tabBarra = contenedor.querySelector("#tab-barra") as HTMLButtonElement;
+    
 
     btnVolver.addEventListener("click", alVolver);
 
@@ -154,7 +159,7 @@ tabBarra.addEventListener("click", () => {
 
 btnEnviar.addEventListener("click", async () => {
     if(pedidoActual.size === 0) {
-        alert("Agrega al menos un producto antes de enviar");
+        mostrarNotificacion("Agrega al menos un producto antes de enviar");
         return;
     }
     const items = Array.from(pedidoActual.entries()).map(([producto_id, cantidad]) => ({ producto_id, cantidad}));
@@ -164,13 +169,26 @@ btnEnviar.addEventListener("click", async () => {
         if(mesa.estado === "libre"){
             await actualizarEstadoMesa(mesa.id, "ocupada");
         }
-        alert("Pedido enviado correctamente");
+        mostrarNotificacion("Pedido enviado correctamente");
         alVolver();
     }catch (error: any) {
-        alert(error.message);
+        mostrarNotificacion(error.message);
+    }
+});
+
+btnCerrarCuenta.addEventListener("click", async() => {
+    const confirmado = await mostrarConfirmacion(`¿Cerrar la cuenta de la Mesa ${mesa.numero}?`);
+    if (!confirmado) return;
+    try {
+        const resultado = await cerrarCuenta(mesa.id);
+        mostrarNotificacion(`Cuenta cerrada. Total cobrado: $${Number(resultado.total).toLocaleString("es-CL")}`);
+        alVolver();
+    } catch (error: any) {
+        mostrarNotificacion(error.message, "error");
     }
 });
 
 pintarProductos();
 pintarPedido();
 }
+

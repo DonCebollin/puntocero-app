@@ -121,3 +121,11 @@ export async function obtenerPedidosPorMesa(mesaId: number) {
   });
   return manejarRespuesta(respuesta);
 }
+
+export async function cerrarCuenta(mesaId: number) {
+  const respuesta = await fetch(`${BACKEND_URL}/api/mesas/${mesaId}/cerrar-cuenta`, {
+    method: "POST",
+    headers: headersConToken(),
+  });
+  return manejarRespuesta(respuesta);
+}

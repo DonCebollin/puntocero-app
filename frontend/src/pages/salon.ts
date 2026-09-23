@@ -2,6 +2,8 @@ import { obtenerMesas, actualizarEstadoMesa, obtenerZonas, crearMesa, eliminarMe
 import { socket } from "../services/socket";
 import { cerrarSesion } from "../services/auth";
 import { renderPantallaPedido } from "./pedido";
+import { obtenerEmpleadoActual } from "../services/auth";
+import { mostrarNotificacion, mostrarConfirmacion } from "../services/ui";
 
 const colorBorde: Record<Mesa ["estado"], string> = {
   libre: "border-libre",
@@ -28,19 +30,23 @@ const siguienteEstado: Record<Mesa["estado"], Mesa["estado"]> = {
 };
 
 export async function renderPantallaSalon(contenedor: HTMLElement): Promise<void> {
+    const empleado = obtenerEmpleadoActual();
+    const esAdmin = empleado?.rol === "administrador";
     contenedor.innerHTML = `
     <div class="min-h-screen bg-superficie p-4">
       <div class="flex items-center justify-between mb-4">
         <h1 class="text-2xl font-bold text-white">Punto Cero — Plano de Salón</h1>
         <div class="flex gap-2">
+          ${esAdmin ? `
           <button id="btn-agregar-mesa" class="bg-libre text-white text-sm font-semibold px-4 py-2 rounded-lg hover:opacity-90 transition">
             + Agregar Mesa
-          </button>
+          </button>` : ''}
           <button id="btn-cerrar-sesion" class="bg-gray-600 text-white text-sm font-semibold px-4 py-2 rounded-lg hover:opacity-90 transition">
             Cerrar sesión
           </button>
         </div>
       </div>
+      <div id="stats-container" class="mb-4"></div>
       <div id="formulario-container"></div>
       <div id="zonas-container"></div>
     </div>
@@ -49,7 +55,7 @@ export async function renderPantallaSalon(contenedor: HTMLElement): Promise<void
 
   const zonasContainer = contenedor.querySelector("#zonas-container") as HTMLElement;
   const formularioContainer = contenedor.querySelector("#formulario-container") as HTMLElement;
-  const btnAgregar = contenedor.querySelector("#btn-agregar-mesa") as HTMLButtonElement;
+  const btnAgregar = contenedor.querySelector("#btn-agregar-mesa") as HTMLButtonElement | null;
   const btnCerrarSesion = contenedor.querySelector("#btn-cerrar-sesion") as HTMLButtonElement;
   btnCerrarSesion.addEventListener("click", () => {
     cerrarSesion();
@@ -98,7 +104,7 @@ export async function renderPantallaSalon(contenedor: HTMLElement): Promise<void
       const zonaId = Number(selectZona.value);
 
       if (!numero || numero <= 0) {
-        alert("Ingresa un número de mesa válido.");
+        mostrarNotificacion("Ingresa un número de mesa válido.", "error");
         return;
       }
 
@@ -112,7 +118,7 @@ export async function renderPantallaSalon(contenedor: HTMLElement): Promise<void
     pintarMesasPorZona(mesas);
   }
 
-  btnAgregar.addEventListener("click", () => {
+  btnAgregar?.addEventListener("click", () => {
     if (formularioContainer.innerHTML.trim() === "") {
       mostrarFormulario();
     } else {
@@ -121,6 +127,28 @@ export async function renderPantallaSalon(contenedor: HTMLElement): Promise<void
   });
 
   function pintarMesasPorZona(mesas: Mesa[]) {
+    const statsContainer = contenedor.querySelector("#stats-container") as HTMLElement;
+    const libres = mesas.filter((m) => m.estado === "libre").length;
+    const ocupadas = mesas.filter((m) => m.estado === "ocupada").length;
+    const porCobrar = mesas.filter((m) => m.estado === "por_cobrar").length;
+
+    statsContainer.innerHTML = `
+      <div class="bg-tarjeta rounded-lg p-3 flex flex-wrap gap-5 items-center text-sm">
+        <div class="flex items-center gap-2">
+          <span class="w-2.5 h-2.5 rounded-full bg-libre"></span>
+          <span class="text-gray-300">Libres: <strong class="text-white">${libres}</strong></span>
+        </div>
+        <div class="flex items-center gap-2">
+          <span class="w-2.5 h-2.5 rounded-full bg-ocupada"></span>
+          <span class="text-gray-300">Ocupadas: <strong class="text-white">${ocupadas}</strong></span>
+        </div>
+        <div class="flex items-center gap-2">
+          <span class="w-2.5 h-2.5 rounded-full bg-porcobrar"></span>
+          <span class="text-gray-300">Por Cobrar: <strong class="text-white">${porCobrar}</strong></span>
+        </div>
+        <div class="text-gray-500 ml-auto">${mesas.length} mesas en total</div>
+      </div>
+    `;
     const mesasPorZona = new Map<string, Mesa[]>();
     for (const mesa of mesas) {
       const zona = mesa.zona_nombre || "Sin zona";
@@ -134,7 +162,10 @@ export async function renderPantallaSalon(contenedor: HTMLElement): Promise<void
       const seccion = document.createElement("div");
       seccion.className = "mb-6";
       seccion.innerHTML = `
-        <h2 class="text-sm font-semibold text-gray-400 uppercase tracking-wide mb-3">${zona}</h2>
+        <h2 class="text-sm font-semibold text-gray-400 uppercase tracking-wide mb-3">
+          ${zona}
+          <span class="text-gray-500 normal-case font-normal">(${mesasDeZona.filter((m) => m.estado !== "libre").length} Ocupadas / ${mesasDeZona.length} Totales)</span>
+        </h2>
         <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
           ${mesasDeZona
             .map(
@@ -142,9 +173,9 @@ export async function renderPantallaSalon(contenedor: HTMLElement): Promise<void
             <button
               data-id="${mesa.id}"
               data-estado="${mesa.estado}"
-              class="mesa-btn relative bg-tarjeta hover:bg-tarjeta-hover border-l-4 ${colorBorde[mesa.estado]} rounded-lg p-4 text-left transition"
+              class="mesa-btn relative bg-tarjeta hover:bg-tarjeta-hover border-l-4 ${colorBorde[mesa.estado]} rounded-lg p-4 text-left transition shadow-md"
             >
-              <span data-eliminar-id="${mesa.id}" data-eliminar-numero="${mesa.numero}" class="btn-eliminar absolute top-1 right-2 text-gray-500 hover:text-red-400 text-sm">✕</span>
+                ${esAdmin ? `<span data-eliminar-id="${mesa.id}" data-eliminar-numero="${mesa.numero}" class="btn-eliminar absolute top-1 right-2 text-gray-500 hover:text-red-400 text-sm">✕</span>` : ''}
               <div class="text-2xl font-bold text-white mb-2">${mesa.numero}</div>
               <span class="inline-block text-xs font-semibold px-2 py-1 rounded-full ${colorBadge[mesa.estado]}">
                 ${textoEstado[mesa.estado]}
@@ -172,12 +203,14 @@ export async function renderPantallaSalon(contenedor: HTMLElement): Promise<void
         evento.stopPropagation();
         const id = Number(span.dataset.eliminarId);
         const numero = span.dataset.eliminarNumero;
-        if (!confirm(`¿Eliminar la mesa ${numero}? Esta acción no se puede deshacer.`)) return;
+        
+        const confirmado = await mostrarConfirmacion(`¿Eliminar la mesa ${numero}? Esta acción no se puede deshacer.`);
+        if (!confirmado) return;
         try {
           await eliminarMesa(id);
           cargarMesas();
         } catch (error: any) {
-          alert(error.message);
+          mostrarNotificacion(error.message, "error");
         }
       });
     });
