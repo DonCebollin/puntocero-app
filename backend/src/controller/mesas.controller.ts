@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import * as MesaModel from "../models/Mesa";
 import { Server } from "socket.io";
 import { crearMesaSchema, actualizarEstadoSchema } from "../validations/mesa.validation";
+import * as PedidoModel from "../models/Pedido";
 
 export function crearMesasController(io: Server) {
     return {
@@ -45,7 +46,7 @@ export function crearMesasController(io: Server) {
             try {
                 const { numero, zona_id } = resultado.data;
 
-                 const yaExiste = await MesaModel.existeNumeroMesa(numero);
+                const yaExiste = await MesaModel.existeNumeroMesa(numero);
                 if (yaExiste) {
                     return res.status(409).json({ error: `Ya existe una mesa con el número ${numero}.` });
                 }
@@ -53,7 +54,7 @@ export function crearMesasController(io: Server) {
                 const id = await MesaModel.crearMesa(numero, zona_id);
                 const mesaCreada = await MesaModel.obtenerMesasPorId(id);
 
-               
+            
                 io.emit("mesa:actualizada", mesaCreada);
                 res.status(201).json(mesaCreada);
         } catch (error) {
@@ -76,6 +77,22 @@ export function crearMesasController(io: Server) {
                 return res.status(409).json({ error: "No se puede eliminar: esta mesa tiene pedidos registrados." });
             }
                 res.status(500).json({ error: "Error al eliminar la mesa" });
+            }
+        },
+
+        async cerrarCuenta(req: Request, res: Response ) {
+            try {
+                const { id } = req.params;
+                const total = await PedidoModel.cerrarCuentaMesa(Number(id));
+
+                await MesaModel.actualizarEstadoMesa(Number(id), "libre");
+                const mesaActualizada = await MesaModel.obtenerMesasPorId(Number(id));
+
+                io.emit("mesa:actualizada", mesaActualizada);
+                res.json({ total, mesa: mesaActualizada });
+            }catch(error) {
+                console.error(error);
+                res.status(500).json({ error: "Error al cerrar cuenta" });
             }
         },
     }

@@ -77,8 +77,7 @@ export async function obtenerPedidoPorId(id: number): Promise<Pedido | null > {
 
 export async function obtenerPedidosPorMesa(mesaId: number): Promise<Pedido[]> {
     const [filasPedidos] = await pool.query<RowDataPacket[]>(
-        "SELECT id, mesa_id, creado_en FROM pedidos WHERE mesa_id = ? ORDER BY creado_en ASC",
-        [mesaId]
+"SELECT id, mesa_id, creado_en FROM pedidos WHERE mesa_id = ? AND cerrado = FALSE ORDER BY creado_en ASC",        [mesaId]
     );
 
     const pedidos: Pedido[] = [];
@@ -90,4 +89,23 @@ export async function obtenerPedidosPorMesa(mesaId: number): Promise<Pedido[]> {
     pedidos.push({ ...fila, items } as Pedido);
 }
     return pedidos;
+}
+
+export async function cerrarCuentaMesa(mesaId: number): Promise<number> {
+    const [items] = await pool.query<RowDataPacket[]>(
+        `SELECT ip.cantidad, ip.precio
+    FROM items_pedido ip
+    JOIN pedidos p ON p.id = ip.pedido_id
+    WHERE p.mesa_id = ? AND p.cerrado = FALSE`,
+    [mesaId]
+    );
+
+    const total = items.reduce((acc, item) => acc + Number(item.precio) * item.cantidad, 0);
+    
+    await pool.query(
+        "UPDATE pedidos SET cerrado = TRUE WHERE mesa_id = ? AND cerrado = FALSE",
+        [mesaId]
+    );
+
+    return total;
 }

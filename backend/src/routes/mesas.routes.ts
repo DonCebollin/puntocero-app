@@ -10,6 +10,6 @@ export function mesasRoutes(io: Server): Router {
     router.patch("/:id/estado", verificarToken, controller.actualizarEstado);
     router.post("/", verificarToken, verificarRol("administrador"),controller.crear);
     router.delete("/:id", verificarToken, verificarRol("administrador"), controller.eliminar);
-    
+    router.post("/:id/cerrar-cuenta", verificarToken, controller.cerrarCuenta);
     return router;
 }
