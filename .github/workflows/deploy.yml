@@ -24,6 +24,13 @@ jobs:
           source ~/.nvm/nvm.sh
           cd backend
           npm run build
+        
+      - name: Instalar y Compilar Frontend
+        run: |
+          source ~/.nvm/nvm.sh
+          cd frontend
+          npm install
+          npm run build
 
       - name: Inyectar variables de entorno Backend
         run: cp ~/backend.env ./backend/.env

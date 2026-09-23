@@ -3,6 +3,7 @@ import cors from "cors";
 import http from "http";
 import { Server } from "socket.io";
 import dotenv from "dotenv";
+import path from "path";
 
 import { verificarConexionBD } from "./config/database";
 import { mesasRoutes } from "./routes/mesas.routes";
@@ -32,6 +33,11 @@ app.use("/api/zonas", zonasRoutes());
 app.use("/api/empleados", empleadosRoutes());
 app.use("/api/productos", productosRoutes());
 app.use("/api/pedidos", pedidosRoutes(io));
+app.use(express.static(path.join(__dirname, "../../frontend/dist")));
+
+app.get(/^(?!\/api).*/, (req, res) => {
+  res.sendFile(path.join(__dirname, "../../frontend/dist/index.html"));
+});
 
 const PUERTO = process.env.PORT || 3000;
 
