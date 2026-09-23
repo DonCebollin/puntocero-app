@@ -173,13 +173,15 @@ export async function renderPantallaSalon(contenedor: HTMLElement): Promise<void
             <button
               data-id="${mesa.id}"
               data-estado="${mesa.estado}"
-              class="mesa-btn relative bg-tarjeta hover:bg-tarjeta-hover border-l-4 ${colorBorde[mesa.estado]} rounded-lg p-4 text-left transition shadow-md"
+              class="mesa-btn relative bg-tarjeta hover:bg-tarjeta-hover border-2 ${colorBorde[mesa.estado]} rounded-lg p-4 text-left transition shadow-md"
             >
-                ${esAdmin ? `<span data-eliminar-id="${mesa.id}" data-eliminar-numero="${mesa.numero}" class="btn-eliminar absolute top-1 right-2 text-gray-500 hover:text-red-400 text-sm">✕</span>` : ''}
-              <div class="text-2xl font-bold text-white mb-2">${mesa.numero}</div>
-              <span class="inline-block text-xs font-semibold px-2 py-1 rounded-full ${colorBadge[mesa.estado]}">
-                ${textoEstado[mesa.estado]}
-              </span>
+                ${esAdmin ? `<span data-eliminar-id="${mesa.id}" data-eliminar-numero="${mesa.numero}" class="btn-eliminar absolute top-1 right-1 text-gray-500 hover:text-red-400 text-sm">✕</span>` : ''}
+              <div class="flex items-center justify-between mb-1">
+                <span class="text-2xl font-bold text-white">${mesa.numero}</span>
+                <span class="text-xs font-semibold px-2 py-1 rounded-full ${colorBadge[mesa.estado]} ${esAdmin ? 'mr-4' : ''}">
+                  ${textoEstado[mesa.estado]}
+                </span>
+              </div>
             </button>
           `
             )

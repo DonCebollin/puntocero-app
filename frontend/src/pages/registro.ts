@@ -6,23 +6,23 @@ export function renderPantallaRegistro(
   alQuererIniciarSesion: () => void
 ): void {
   contenedor.innerHTML = `
-    <div class="min-h-screen bg-superficie flex items-center justify-center p-4">
+    <div class="min-h-screen bg-superficie flex flex-col items-center justify-center p-4">
       <div class="bg-tarjeta rounded-lg p-6 w-full max-w-sm">
-         <img src="/logo.png" alt="Punto Cero" class="w-24 h-24 mx-auto mb-4" />
+        <img src="/logo.png" alt="Punto Cero" class="w-28 h-28 mx-auto mb-6" />
 
         <div id="error-registro" class="hidden bg-red-500/20 text-red-400 text-sm rounded p-2 mb-4"></div>
 
-        <label class="block text-xs text-gray-400 mb-1">Nombre completo</label>
+        <label class="block text-xs text-gray-400 mb-1">NOMBRE COMPLETO</label>
         <input id="input-nombre" type="text" class="bg-superficie text-white rounded px-3 py-2 w-full mb-3" />
 
-        <label class="block text-xs text-gray-400 mb-1">Usuario</label>
+        <label class="block text-xs text-gray-400 mb-1">USUARIO</label>
         <input id="input-usuario" type="text" class="bg-superficie text-white rounded px-3 py-2 w-full mb-3" />
 
-        <label class="block text-xs text-gray-400 mb-1">Contraseña</label>
-        <input id="input-password" type="password" class="bg-superficie text-white rounded px-3 py-2 w-full mb-3" />
+        <label class="block text-xs font-semibold text-gray-400 tracking-wide mb-1">CONTRASEÑA</label>
+        <input id="input-password" type="password" class="bg-superficie border border-gray-700 text-white rounded px-3 py-2 w-full mb-3" />
 
-        <label class="block text-xs text-gray-400 mb-1">Rol</label>
-        <select id="select-rol" class="bg-superficie text-white rounded px-3 py-2 w-full mb-6">
+        <label class="block text-xs font-semibold text-gray-400 tracking-wide mb-1">ROL</label>
+        <select id="select-rol" class="bg-superficie border border-gray-700 text-white rounded px-3 py-2 w-full mb-6">
           <option value="garzon">Garzón</option>
           <option value="cocina">Cocina</option>
           <option value="barra">Barra</option>
@@ -32,9 +32,11 @@ export function renderPantallaRegistro(
           Registrarme
         </button>
 
-        <button id="btn-ir-login" class="text-gray-400 text-sm w-full text-center hover:text-white transition">
-          ¿Ya tienes cuenta? Inicia sesión
-        </button>
+    <div class="border-t border-gray-700 mt-6 pt-4 text-center">
+        <span class="text-gray-400 text-sm">¿Ya tienes cuenta? </span>
+        <button id="btn-ir-login" class="text-libre text-sm font-semibold hover:underline">Inicia sesión</button>
+        </div>
+         <p class="text-gray-600 text-xs mt-4">Punto Cero Resto-Bar Management • v1.0</p>
       </div>
     </div>
   `;

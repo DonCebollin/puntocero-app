@@ -31,9 +31,10 @@ export async function renderPantallaPedido(
         <button id="btn-enviar" class="bg-libre text-white font-semibold w-full py-2 rounded-lg mt-4 hover:opacity-90 transition">
         Enviar Pedido
         </button>
+        ${mesa.estado !== "libre" ? `
         <button id="btn-cerrar-cuenta" class="bg-porcobrar text-white font-semibold w-full py-2 rounded-lg mt-2 hover:opacity-90 transition">
         Cerrar Cuenta y Cobrar
-        </button>
+        </button>` : ''}
     </div>
     </div>
 `;
@@ -43,7 +44,7 @@ export async function renderPantallaPedido(
     const totalPedido = contenedor.querySelector("#total-pedido") as HTMLElement;
     const btnVolver = contenedor.querySelector("#btn-volver") as HTMLButtonElement;
     const btnEnviar = contenedor.querySelector("#btn-enviar") as HTMLButtonElement;
-    const btnCerrarCuenta = contenedor.querySelector("#btn-cerrar-cuenta") as HTMLButtonElement;
+    const btnCerrarCuenta = contenedor.querySelector("#btn-cerrar-cuenta") as HTMLButtonElement | null;
     const tabCocina = contenedor.querySelector("#tab-cocina") as HTMLButtonElement;
     const tabBarra = contenedor.querySelector("#tab-barra") as HTMLButtonElement;
     
@@ -85,7 +86,7 @@ function pintarProductos() {
     listaProductos.innerHTML = filtrados
         .map(
         (p) => `
-        <div class="bg-tarjeta rounded-lg p-3 flex justify-between items-center">
+                <div class="bg-tarjeta rounded-lg p-3 flex justify-between items-center border-l-2 border-gray-700">
         <div>
             <p class="text-white text-sm font-medium">${p.nombre}</p>
             <p class="text-gray-400 text-xs">$${Number(p.precio).toLocaleString("es-CL")}</p>
@@ -110,35 +111,58 @@ function pintarPedido() {
         totalPedido.textContent = "$0";
         return;
     }
-    let total = 0;
-    listaPedido.innerHTML = Array.from(pedidoActual.entries())
-        .map(([id, cantidad]) => {
-        const producto = productos.find((p) => p.id === id)!;
-        const subtotal = Number(producto.precio) * cantidad;
-        total += subtotal;
-        return `<div class="flex justify-between items-center text-sm">
-        <div class="flex items-center gap-2">
-            <button data-id="${id}" class="btn-restar bg-gray-700 hover:bg-gray-600 text-white w-6 h-6 rounded-full text-xs">−</button>
-            <span class="text-gray-300">${cantidad}x ${producto.nombre}</span>
-        </div>
-        <span class="text-white">$${subtotal.toLocaleString("es-CL")}</span>
-    </div>`;
 
-    })
-    .join("");
+    const itemsCocina: Array<{ id: number; producto: any; cantidad: number }> = [];
+    const itemsBarra: Array<{ id: number; producto: any; cantidad: number }> = [];
+
+    for (const [id, cantidad] of pedidoActual.entries()) {
+        const producto = productos.find((p) => p.id === id)!;
+        const grupo = producto.estacion === "cocina" ? itemsCocina : itemsBarra;
+        grupo.push({ id, producto, cantidad });
+    }
+
+    function renderGrupo(items: typeof itemsCocina, titulo: string, colorClase: string): string {
+        if (items.length === 0) return "";
+        const subtotal = items.reduce((acc, it) => acc + Number(it.producto.precio) * it.cantidad, 0);
+        return `
+        <div class="mb-3">
+            <div class="flex justify-between items-center mb-1">
+            <span class="text-xs font-semibold uppercase tracking-wide ${colorClase}">${titulo}</span>
+            <span class="text-xs text-gray-400">$${subtotal.toLocaleString("es-CL")}</span>
+            </div>
+            ${items
+            .map(
+                (it) => `
+            <div class="flex justify-between items-center text-sm mb-1">
+                <div class="flex items-center gap-2">
+                <button data-id="${it.id}" class="btn-restar bg-gray-700 hover:bg-gray-600 text-white w-6 h-6 rounded-full text-xs">−</button>
+                <span class="text-gray-300">${it.cantidad}x ${it.producto.nombre}</span>
+                </div>
+                <span class="text-white">$${(Number(it.producto.precio) * it.cantidad).toLocaleString("es-CL")}</span>
+            </div>`
+            )
+            .join("")}
+        </div>
+        `;
+    }
+
+    listaPedido.innerHTML =
+        renderGrupo(itemsCocina, "Cocina", "text-libre") +
+        renderGrupo(itemsBarra, "Barra", "text-porcobrar");
+
+    const total = [...itemsCocina, ...itemsBarra].reduce((acc, it) => acc + Number(it.producto.precio) * it.cantidad, 0);
     totalPedido.textContent = `$${total.toLocaleString("es-CL")}`;
 
-
-listaPedido.querySelectorAll<HTMLButtonElement>(".btn-restar").forEach((btn) => {
-    btn.addEventListener("click", () => {
-        const id = Number(btn.dataset.id);
-        const cantidadActual = pedidoActual.get(id) || 0;
-        if (cantidadActual <= 1) {
-            pedidoActual.delete(id);
-        } else {
-            pedidoActual.set(id, cantidadActual - 1);
-        }
-        pintarPedido();
+    listaPedido.querySelectorAll<HTMLButtonElement>(".btn-restar").forEach((btn) => {
+        btn.addEventListener("click", () => {
+            const id = Number(btn.dataset.id);
+            const cantidadActual = pedidoActual.get(id) || 0;
+            if (cantidadActual <= 1) {
+                pedidoActual.delete(id);
+            } else {
+                pedidoActual.set(id, cantidadActual - 1);
+            }
+            pintarPedido();
         });
     });
 }
@@ -176,7 +200,7 @@ btnEnviar.addEventListener("click", async () => {
     }
 });
 
-btnCerrarCuenta.addEventListener("click", async() => {
+btnCerrarCuenta?.addEventListener("click", async() => {
     const confirmado = await mostrarConfirmacion(`¿Cerrar la cuenta de la Mesa ${mesa.numero}?`);
     if (!confirmado) return;
     try {

@@ -35,7 +35,7 @@ export function mostrarConfirmacion(mensaje: string): Promise<boolean> {
         resolve(false);
     });
 
-    btnCancelar.addEventListener("click", () => {
+    btnConfirmar.addEventListener("click", () => {
         fondo.remove();
         resolve(true);
        });
