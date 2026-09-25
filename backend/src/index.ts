@@ -18,15 +18,11 @@ const app = express();
 const servidorHttp = http.createServer(app);
 
 const io = new Server(servidorHttp, {
-    cors : { origin: "*"},
+    cors: { origin: "*" },
 });
 
 app.use(cors());
 app.use(express.json());
-
-app.get("/", (req, res) => {
-  res.json({ mensaje: "API Punto Cero funcionando correctamente" });
-});
 
 app.use("/api/mesas", mesasRoutes(io));
 app.use("/api/zonas", zonasRoutes());
@@ -37,4 +33,11 @@ app.use(express.static(path.join(__dirname, "../../frontend/dist")));
 
 app.get(/^(?!\/api).*/, (req, res) => {
   res.sendFile(path.join(__dirname, "../../frontend/dist/index.html"));
+});
+
+const PUERTO = process.env.PORT || 3000;
+
+servidorHttp.listen(PUERTO, () => {
+  console.log(`Servidor backend escuchando en el puerto ${PUERTO}`);
+  verificarConexionBD();
 });
