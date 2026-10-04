@@ -1,3 +1,4 @@
+import { number } from "zod";
 import { pool } from "../config/database";
 import { ResultSetHeader, RowDataPacket } from "mysql2";
 
@@ -12,6 +13,7 @@ export interface ItemPedido {
     estacion: "cocina" | "barra";
     cantidad: number;
     precio: number;
+    listo: number
 }
 
 export interface Pedido {
@@ -19,6 +21,15 @@ export interface Pedido {
     mesa_id: number,
     creado_en: string;
     items: ItemPedido[];
+}
+
+export interface ItemPendiente {
+    id: number;
+    pedido_id: number;
+    producto: string;
+    cantidad: number;
+    mesa_id: number;
+    mesa_numero: number;
 }
 
 export async function crearPedido(mesaId: number, items: ItemPedidoEntrada[]): Promise<number> {
@@ -68,7 +79,7 @@ export async function obtenerPedidoPorId(id: number): Promise<Pedido | null > {
     if (!pedido) return null;
 
     const [items] = await pool.query<RowDataPacket[]>(
-        "SELECT id, producto, estacion, cantidad, precio FROM items_pedido WHERE pedido_id = ?",
+        "SELECT id, producto, estacion, cantidad, precio FROM items_pedido WHERE pedido_id = ?"
         [id]
     );
 
@@ -83,7 +94,7 @@ export async function obtenerPedidosPorMesa(mesaId: number): Promise<Pedido[]> {
     const pedidos: Pedido[] = [];
         for (const fila of filasPedidos) {
     const [items] = await pool.query<RowDataPacket[]>(
-        "SELECT id, producto, estacion, cantidad, precio FROM items_pedido WHERE pedido_id = ?",
+        "SELECT id, producto, estacion, cantidad, precio, listo FROM items_pedido WHERE pedido_id = ?"  ,
         [fila.id]
     );
     pedidos.push({ ...fila, items } as Pedido);
@@ -108,4 +119,34 @@ export async function cerrarCuentaMesa(mesaId: number): Promise<number> {
     );
 
     return total;
+
+}
+
+export async function obtenerItemsPendientes(estacion: "cocina" | "barra"): Promise<ItemPendiente[]>{
+        const[fila] = await pool.query<RowDataPacket[]>(
+            `SELECT ip.id, ip.pedido_id, ip.producto, ip.cantidad,
+            p.mesa_id, m.numero AS mesa_numero
+        FROM items_pedido ip
+        JOIN pedidos p ON p.id = ip.pedido_id
+        JOIN mesas m ON m.id = p.mesa_id
+        WHERE ip.estacion = ? AND ip.listo = FALSE AND p.cerrado = FALSE
+        ORDER BY p.creado_en ASC, ip.id ASC`,
+        [estacion]
+        );
+        return fila as ItemPendiente[];
+}
+
+export async function marcarItemListo(itemId: number) {
+    const [filas] = await pool.query<RowDataPacket[]>(
+        `SELECT ip.id, ip.pedido_id, ip.estacion, p.mesa_id
+        FROM items_pedido ip
+        JOIN pedidos p ON p.id = ip.pedido_id
+        WHERE ip.id = ?`,
+        [itemId]
+    );
+    const item = filas[0];
+    if(!item) return null;
+
+    await pool.query("UPDATE items_pedido SET listo = TRUE WHERE id = ?", [itemId]);
+    return item;
 }
