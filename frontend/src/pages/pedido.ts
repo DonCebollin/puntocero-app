@@ -1,6 +1,7 @@
 
 import { obtenerProductos, crearPedido, actualizarEstadoMesa, obtenerPedidosPorMesa, cerrarCuenta,  Mesa } from "../services/api";
 import { mostrarConfirmacion, mostrarNotificacion } from "../services/ui";
+import { socket } from "../services/socket";
 
 export async function renderPantallaPedido(
     contenedor: HTMLElement,
@@ -52,19 +53,25 @@ export async function renderPantallaPedido(
     btnVolver.addEventListener("click", alVolver);
 
     const productos = await obtenerProductos();
+    const cajaAnteriores = document.createElement("div");
+    contenedor.querySelector(".min-h-screen")!.insertBefore(cajaAnteriores,
+        contenedor.querySelector("#tab-cocina")!.parentElement
+    );
 
-    const pedidosAnteriores = await obtenerPedidosPorMesa(mesa.id);
-        if (pedidosAnteriores.length > 0) {
-            const resumenAnterior = document.createElement("div");
-            resumenAnterior.className = "bg-tarjeta rounded-lg p-4 mb-4";
+    async function pintarPedidosAnteriores() {
+        const pedidosAnteriores = await obtenerPedidosPorMesa(mesa.id);
+    
+        cajaAnteriores.className = "bg-tarjeta rounded-lg p-4 mb-4";
     const todosLosItems = pedidosAnteriores.flatMap((p: any) => p.items);
     const totalAnterior = todosLosItems.reduce((acc: number, item: any) => acc + Number(item.precio) * item.cantidad, 0);
 
-    resumenAnterior.innerHTML = `
+    cajaAnteriores.innerHTML = `
             <h2 class="text-white font-semibold mb-2">Ya pedido en esta mesa</h2>
             ${todosLosItems.map((item: any) => `
         <div class="flex justify-between text-sm text-gray-300">
-            <span>${item.cantidad}x ${item.producto}</span>
+            <span>${item.cantidad}x ${item.producto}
+            <span class="ml-2 text-xs px-2 py-0.5 rounded-full ${item.listo ? "bg-libre/20 text-libre" : "bg-porcobrar/20 text-porcobrar"}">${item.listo ? "Listo" : "Pendiente"}</span>
+            </span>
             <span>$${(Number(item.precio) * item.cantidad).toLocaleString("es-CL")}</span>
         </div>
     `).join("")}
@@ -74,12 +81,25 @@ export async function renderPantallaPedido(
         </div>
     `;
     contenedor.querySelector(".min-h-screen")!.insertBefore(
-    resumenAnterior,
+    cajaAnteriores,
     contenedor.querySelector("#tab-cocina")!.parentElement
     );
 }
     const pedidoActual = new Map<number, number>();
     let estacionActiva: "cocina" | "barra" = "cocina";
+
+    await pintarPedidosAnteriores();  
+    
+function alCambiarItem(data: { mesaId: number }) {
+    if (!document.body.contains(cajaAnteriores)) {
+        socket.off("item:listo", alCambiarItem);
+        return;
+    }
+    if (data.mesaId === mesa.id) {
+        pintarPedidosAnteriores();
+    }
+}
+socket.on("item:listo", alCambiarItem);
 
 function pintarProductos() {
     const filtrados = productos.filter((p) => p.estacion === estacionActiva);
@@ -183,7 +203,7 @@ tabBarra.addEventListener("click", () => {
 
 btnEnviar.addEventListener("click", async () => {
     if(pedidoActual.size === 0) {
-        mostrarNotificacion("Agrega al menos un producto antes de enviar");
+        mostrarNotificacion("Agrega al menos un producto antes de enviar", "error");
         return;
     }
     const items = Array.from(pedidoActual.entries()).map(([producto_id, cantidad]) => ({ producto_id, cantidad}));
@@ -196,7 +216,7 @@ btnEnviar.addEventListener("click", async () => {
         mostrarNotificacion("Pedido enviado correctamente");
         alVolver();
     }catch (error: any) {
-        mostrarNotificacion(error.message);
+        mostrarNotificacion(error.message, "error");
     }
 });
 
