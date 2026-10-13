@@ -4,6 +4,7 @@ import { renderPantallaLogin } from "./pages/login";
 import { renderPantallaRegistro } from "./pages/registro";
 import { renderPantallaCola } from "./pages/cola";
 import { haySesionActiva, obtenerEmpleadoActual } from "./services/auth";
+import { mostrarBotonTema } from "./services/tema";
 
 const app = document.getElementById("app");
 
@@ -18,10 +19,6 @@ function mostrarPantallaPrincipal() {
   }
 }
 
-function mostrarSalon() {
-  if (app) renderPantallaSalon(app);
-}
-
 function mostrarLogin() {
   if(app) renderPantallaLogin(app, mostrarPantallaPrincipal, mostrarRegistro);
 }
@@ -29,6 +26,8 @@ function mostrarLogin() {
 function mostrarRegistro() {
   if(app) renderPantallaRegistro(app, mostrarLogin, mostrarLogin);
 }
+
+mostrarBotonTema();
 
 if(app) {
   if(haySesionActiva()) {
