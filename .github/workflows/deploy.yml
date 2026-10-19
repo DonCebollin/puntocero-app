@@ -28,6 +28,7 @@ jobs:
       - name: Instalar y Compilar Frontend
         run: |
           source ~/.nvm/nvm.sh
+          cp ~/frontend.env ./frontend/.env
           cd frontend
           npm install
           npm run build
@@ -40,4 +41,10 @@ jobs:
           source ~/.nvm/nvm.sh
           cd backend
           setsid pm2 restart api-backend || setsid pm2 start dist/index.js --name "api-backend"
+          pm2 save
+
+      - name: Servir Frontend con PM2
+        run: |
+          source ~/.nvm/nvm.sh
+          pm2 describe frontend > /dev/null || setsid pm2 serve frontend/dist 443 --name frontend --spa
           pm2 save
