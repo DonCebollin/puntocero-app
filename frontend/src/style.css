@@ -1,10 +1,32 @@
 @import "tailwindcss";
 
-@theme {
-  --color-superficie: #0b1326;
-  --color-tarjeta: #171f33;
-  --color-tarjeta-hover: #222a3d;
+:root {
+  --c-superficie: #0b1326;
+  --c-tarjeta: #171f33;
+  --c-tarjeta-hover: #222a3d;
+  --c-texto: #f1f5f9;
+}
+
+html.claro {
+  --c-superficie: #f1f5f9;
+  --c-tarjeta: #ffffff;
+  --c-tarjeta-hover: #e2e8f0;
+  --c-texto: #0f172a;
+}
+
+
+
+
+@theme inline {
+  --color-superficie: var(--c-superficie);
+  --color-tarjeta: var(--c-tarjeta);
+  --color-tarjeta-hover: var(--c-tarjeta-hover);
+  --color-texto: var(--c-texto);
   --color-libre: #10b981;
   --color-ocupada: #f97316;
   --color-porcobrar: #f59e0b;
+}
+body {
+  background: var(--c-superficie);
+  color: var(--c-texto);
 }

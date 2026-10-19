@@ -35,7 +35,7 @@ export async function renderPantallaSalon(contenedor: HTMLElement): Promise<void
     contenedor.innerHTML = `
     <div class="min-h-screen bg-superficie p-4">
       <div class="flex items-center justify-between mb-4">
-        <h1 class="text-2xl font-bold text-white">Punto Cero — Plano de Salón</h1>
+        <h1 class="text-2xl font-bold text-texto">Punto Cero — Plano de Salón</h1>
         <div class="flex gap-2">
           ${esAdmin ? `
           <button id="btn-agregar-mesa" class="bg-libre text-white text-sm font-semibold px-4 py-2 rounded-lg hover:opacity-90 transition">
@@ -72,12 +72,12 @@ export async function renderPantallaSalon(contenedor: HTMLElement): Promise<void
     formularioContainer.innerHTML = `
       <div class="bg-tarjeta rounded-lg p-4 mb-6 flex flex-wrap gap-3 items-end">
         <div>
-          <label class="block text-xs text-gray-400 mb-1">Número de mesa</label>
-          <input id="input-numero" type="number" min="1" class="bg-superficie text-white rounded px-3 py-2 w-32" />
+          <label class="block text-xs text-texto/60 mb-1">Número de mesa</label>
+          <input id="input-numero" type="number" min="1" class="bg-superficie text-texto rounded px-3 py-2 w-32" />
         </div>
         <div>
-          <label class="block text-xs text-gray-400 mb-1">Zona</label>
-          <select id="select-zona" class="bg-superficie text-white rounded px-3 py-2">
+          <label class="block text-xs text-texto/60 mb-1">Zona</label>
+          <select id="select-zona" class="bg-superficie text-texto rounded px-3 py-2">
             ${zonasDisponibles.map((z) => `<option value="${z.id}">${z.nombre}</option>`).join("")}
           </select>
         </div>
@@ -136,17 +136,17 @@ export async function renderPantallaSalon(contenedor: HTMLElement): Promise<void
       <div class="bg-tarjeta rounded-lg p-3 flex flex-wrap gap-5 items-center text-sm">
         <div class="flex items-center gap-2">
           <span class="w-2.5 h-2.5 rounded-full bg-libre"></span>
-          <span class="text-gray-300">Libres: <strong class="text-white">${libres}</strong></span>
+          <span class="text-texto/60">Libres: <strong class="text-texto">${libres}</strong></span>
         </div>
         <div class="flex items-center gap-2">
           <span class="w-2.5 h-2.5 rounded-full bg-ocupada"></span>
-          <span class="text-gray-300">Ocupadas: <strong class="text-white">${ocupadas}</strong></span>
+          <span class="text-texto/60">Ocupadas: <strong class="text-texto">${ocupadas}</strong></span>
         </div>
         <div class="flex items-center gap-2">
           <span class="w-2.5 h-2.5 rounded-full bg-porcobrar"></span>
-          <span class="text-gray-300">Por Cobrar: <strong class="text-white">${porCobrar}</strong></span>
+          <span class="text-texto/60">Por Cobrar: <strong class="text-texto">${porCobrar}</strong></span>
         </div>
-        <div class="text-gray-500 ml-auto">${mesas.length} mesas en total</div>
+        <div class="text-texto/60 ml-auto">${mesas.length} mesas en total</div>
       </div>
     `;
     const mesasPorZona = new Map<string, Mesa[]>();
@@ -162,9 +162,9 @@ export async function renderPantallaSalon(contenedor: HTMLElement): Promise<void
       const seccion = document.createElement("div");
       seccion.className = "mb-6";
       seccion.innerHTML = `
-        <h2 class="text-sm font-semibold text-gray-400 uppercase tracking-wide mb-3">
+        <h2 class="text-sm font-semibold text-texto/60 uppercase tracking-wide mb-3">
           ${zona}
-          <span class="text-gray-500 normal-case font-normal">(${mesasDeZona.filter((m) => m.estado !== "libre").length} Ocupadas / ${mesasDeZona.length} Totales)</span>
+          <span class="text-texto/60 normal-case font-normal">(${mesasDeZona.filter((m) => m.estado !== "libre").length} Ocupadas / ${mesasDeZona.length} Totales)</span>
         </h2>
         <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
           ${mesasDeZona
@@ -175,9 +175,9 @@ export async function renderPantallaSalon(contenedor: HTMLElement): Promise<void
               data-estado="${mesa.estado}"
               class="mesa-btn relative bg-tarjeta hover:bg-tarjeta-hover border-2 ${colorBorde[mesa.estado]} rounded-lg p-4 text-left transition shadow-md"
             >
-                ${esAdmin ? `<span data-eliminar-id="${mesa.id}" data-eliminar-numero="${mesa.numero}" class="btn-eliminar absolute top-1 right-1 text-gray-500 hover:text-red-400 text-sm">✕</span>` : ''}
+                ${esAdmin ? `<span data-eliminar-id="${mesa.id}" data-eliminar-numero="${mesa.numero}" class="btn-eliminar absolute top-1 right-1 text-texto/60 hover:text-red-400 text-sm">✕</span>` : ''}
               <div class="flex items-center justify-between mb-1">
-                <span class="text-2xl font-bold text-white">${mesa.numero}</span>
+                <span class="text-2xl font-bold text-texto">${mesa.numero}</span>
                 <span class="text-xs font-semibold px-2 py-1 rounded-full ${colorBadge[mesa.estado]} ${esAdmin ? 'mr-4' : ''}">
                   ${textoEstado[mesa.estado]}
                 </span>

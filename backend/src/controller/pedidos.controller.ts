@@ -3,6 +3,8 @@ import { Server } from "socket.io";
 import * as PedidoModel from "../models/Pedido";
 import { crearPedidoSchema } from "../validations/pedido.validation";
 import * as MesaModel from "../models/Mesa";
+import { error } from "node:console";
+import { tr } from "zod/locales";
 
 export function crearPedidosController(io: Server) {
   return {
@@ -14,7 +16,7 @@ export function crearPedidosController(io: Server) {
       try {
         const { mesa_id, items } = resultado.data;
 
-        const pedidoId = await PedidoModel.crearPedido(mesa_id, items);
+        const pedidoId = await PedidoModel.crearPedido(mesa_id, items, (req as any).empleado?.id ?? null);
         const pedido = await PedidoModel.obtenerPedidoPorId(pedidoId);
 
         if (!pedido) {
@@ -65,6 +67,45 @@ export function crearPedidosController(io: Server) {
             console.error(error);
             res.status(500).json({ error: "Error al obtener el pedido"});
         }
+    },
+    
+      async pendientes(req: Request, res: Response) {
+      try {
+        const { estacion } = req.params;
+        if (estacion !== "cocina" && estacion !== "barra") {
+          return res.status(400).json({ error: "Estacion invalida" });
+        }
+        const items = await PedidoModel.obtenerItemsPendientes(estacion);
+        res.json(items);   
+      } catch ( error ) {
+        console.error(error);
+        res.status(500).json({ error: "Error al obtener los pendientes"});
+      }
+    },
+
+    async marcarListo(req: Request, res: Response) {
+      try {
+        const itemId = Number(req.params.id);
+        if(!Number.isInteger(itemId) || itemId <= 0) {
+          return res.status(400).json({ error: "Id invalido"});
+        }
+
+        const item = await PedidoModel.marcarItemListo(itemId);
+        if(!item) {
+          return res.status(404).json({ error: "Item no encontrado"});
+        }
+
+        io.emit("item:listo", {
+          itemId: item.id,
+          pedidoId: item.pedido_id,
+          mesaId: item.mesa_id,
+          estacion: item.estacion
+        });
+        res.json({ ok: true});
+      } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: "Error al marcar el item como listo"});
+      } 
     }
   }
 }

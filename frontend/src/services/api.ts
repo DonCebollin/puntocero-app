@@ -9,6 +9,17 @@ export interface Mesa {
     estado: "libre" | "ocupada" | "por_cobrar";
 }
 
+export interface ItemPendiente {
+  id: number,
+  pedido_id: number;
+  producto: string;
+  cantidad: number;
+  mesa_id: number;
+  mesa_numero: number;
+  creado_en: string;
+  garzon: string | null;
+}
+
 function headersConToken(): HeadersInit {
   const token = obtenerToken();
   return {
@@ -128,4 +139,19 @@ export async function cerrarCuenta(mesaId: number) {
     headers: headersConToken(),
   });
   return manejarRespuesta(respuesta);
+}
+
+export async function obtenerPendientes(estacion: "cocina" | "barra"): Promise<ItemPendiente[]> {
+    const respuesta = await fetch (`${BACKEND_URL}/api/pedidos/pendientes/${estacion}`, {
+    headers: headersConToken(),
+  });
+  return manejarRespuesta(respuesta);
+}
+
+export async function marcarItemListo(itemId: number): Promise <void> {
+  const respuesta = await fetch (`${BACKEND_URL}/api/pedidos/items/${itemId}/listo`, {
+    method: "PATCH",
+    headers: headersConToken(),
+  });
+  await manejarRespuesta(respuesta);
 }
