@@ -8,18 +8,18 @@ export function renderPantallaLogin(
 ): void {
   contenedor.innerHTML = `
     <div class="min-h-screen bg-superficie flex flex-col items-center justify-center p-4">
-      <div class="bg-tarjeta border border-gray-700 rounded-lg p-8 w-full max-w-sm">
+      <div class="bg-tarjeta border border-texto/20 rounded-lg p-8 w-full max-w-sm">
         <img src="/logo.png" alt="Punto Cero" class="w-28 h-28 mx-auto mb-6" />
 
         <div id="error-login" class="hidden bg-red-500/20 text-red-400 text-sm rounded p-2 mb-4"></div>
 
-        <label class="block text-xs font-semibold text-gray-400 tracking-wide mb-1">USUARIO</label>
-        <input id="input-usuario" type="text" class="bg-superficie border border-gray-700 text-white rounded px-3 py-2 w-full mb-4" />
+        <label class="block text-xs font-semibold text-texto/60 tracking-wide mb-1">USUARIO</label>
+        <input id="input-usuario" type="text" class="bg-superficie border border-texto/20 text-texto rounded px-3 py-2 w-full mb-4" />
 
-        <label class="block text-xs font-semibold text-gray-400 tracking-wide mb-1">CONTRASEÑA</label>
+        <label class="block text-xs font-semibold text-texto/60 tracking-wide mb-1">CONTRASEÑA</label>
     <div class="relative mb-6">
-        <input id="input-password" type="password" class="bg-superficie border border-gray-700 text-white rounded px-3 py-2 w-full pr-10" />
-        <button id="btn-ver-password" type="button" class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white">
+        <input id="input-password" type="password" class="bg-superficie border border-texto/20 text-texto rounded px-3 py-2 w-full pr-10" />
+        <button id="btn-ver-password" type="button" class="absolute right-3 top-1/2 -translate-y-1/2 text-texto/60 hover:text-texto">
     <svg id="icono-ojo" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
       <path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z"></path>
       <circle cx="12" cy="12" r="3"></circle>
@@ -31,13 +31,13 @@ export function renderPantallaLogin(
           Iniciar sesión
         </button>
 
-        <div class="border-t border-gray-700 mt-6 pt-4 text-center">
-          <span class="text-gray-400 text-sm">¿No tienes cuenta? </span>
+        <div class="border-t border-texto/20 mt-6 pt-4 text-center">
+          <span class="text-texto/60 text-sm">¿No tienes cuenta? </span>
         <button id="btn-ir-registro" class="text-libre text-sm font-semibold 
         hover:underline">Regístrate</button>
     </div>
       </div>
-        <p class="text-gray-600 text-xs mt-4">Punto Cero Resto-Bar Management • v1.0</p>
+        <p class="text-texto/60 text-xs mt-4">Punto Cero Resto-Bar Management • v1.0</p>
     </div>
   `;
 

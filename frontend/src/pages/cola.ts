@@ -24,17 +24,17 @@ export function renderPantallaCola (contenedor: HTMLElement, estacion: "cocina" 
     <div class="min-h-screen bg-superficie p-4">
         <div class="flex items-center justify-between mb-4">
             <div>
-                <h1 class="text-2xl font-bold text-white">Cola de ${titulo}</h1>
-                <p id="contador" class="text-sm text-gray-400">Sin pendientes</p>
+                <h1 class="text-2xl font-bold text-texto">Cola de ${titulo}</h1>
+                <p id="contador" class="text-sm text-texto/60">Sin pendientes</p>
             </div>
             <button id="btn-cerrar-sesion" class="bg-gray-600 text-white text-sm font-semibold px-4 py-2 rounded-lg hover:opacity-90 transition">
                 Cerrar sesión
             </button>
         </div>
 
-        <div id="sin-pedidos" class="bg-tarjeta border border-gray-700 rounded-lg p-8 text-center">
-            <p class="text-gray-300 font-semibold">Todo al día</p>
-            <p class="text-gray-500 text-sm">Los pedidos nuevos aparecerán aquí automáticamente.</p>
+        <div id="sin-pedidos" class="bg-tarjeta border border-texto/20 rounded-lg p-8 text-center">
+            <p class="text-texto/60 font-semibold">Todo al día</p>
+            <p class="text-texto/60 text-sm">Los pedidos nuevos aparecerán aquí automáticamente.</p>
         </div>
 
         <div id="lista-cola" class="space-y-3"></div>
@@ -71,13 +71,13 @@ export function renderPantallaCola (contenedor: HTMLElement, estacion: "cocina" 
         const urgencia = estiloUrgencia(minutos);
         return `
         <div class="bg-tarjeta rounded-lg p-4 border-l-4 ${urgencia.borde} shadow-md flex items-center gap-4">
-            <div class="bg-superficie text-white font-bold text-xl rounded-lg w-14 h-14 flex items-center justify-center shrink-0">
+            <div class="bg-superficie text-texto font-bold text-xl rounded-lg w-14 h-14 flex items-center justify-center shrink-0">
                 ${item.cantidad}x
             </div>
             <div class="flex-1 min-w-0">
-                <p class="text-white font-semibold text-lg truncate">${item.producto}</p>
-                <p class="text-gray-400 text-sm">Mesa ${item.mesa_numero} · ${item.garzon ?? "Sin registro"}</p>
-                <p class="text-gray-500 text-xs">Enviado a las ${formatearHora(item.creado_en)}</p>
+                <p class="text-texto font-semibold text-lg truncate">${item.producto}</p>
+                <p class="text-texto/60 text-sm">Mesa ${item.mesa_numero} · ${item.garzon ?? "Sin registro"}</p>
+                <p class="text-texto/60 text-xs">Enviado a las ${formatearHora(item.creado_en)}</p>
             </div>
             <div class="flex flex-col items-end gap-2 shrink-0">
                 <span class="text-xs font-semibold px-2 py-1 rounded-full ${urgencia.chip}">${minutos} min</span>

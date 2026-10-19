@@ -18,14 +18,14 @@ html.claro {
 
 
 @theme inline {
-  --color-superficie: #0b1326;
-  --color-tarjeta: #171f33;
-  --color-tarjeta-hover: #222a3d;
+  --color-superficie: var(--c-superficie);
+  --color-tarjeta: var(--c-tarjeta);
+  --color-tarjeta-hover: var(--c-tarjeta-hover);
+  --color-texto: var(--c-texto);
   --color-libre: #10b981;
   --color-ocupada: #f97316;
   --color-porcobrar: #f59e0b;
 }
-
 body {
   background: var(--c-superficie);
   color: var(--c-texto);

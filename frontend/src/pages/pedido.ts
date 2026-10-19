@@ -11,23 +11,23 @@ export async function renderPantallaPedido(
     contenedor.innerHTML = `
     <div class="min-h-screen bg-superficie p-4">
     <div class="flex items-center gap-3 mb-4">
-        <button id="btn-volver" class="text-gray-400 hover:text-white text-sm">← Volver</button>
-        <h1 class="text-xl font-bold text-white">Pedido — Mesa ${mesa.numero}</h1>
+        <button id="btn-volver" class="text-texto/60 hover:text-texto text-sm">← Volver</button>
+        <h1 class="text-xl font-bold text-texto">Pedido — Mesa ${mesa.numero}</h1>
     </div>
 
     <div class="flex gap-2 mb-4">
         <button id="tab-cocina" class="tab-btn bg-libre text-white text-sm font-semibold px-4 py-2 rounded-lg">Cocina</button>
-        <button id="tab-barra" class="tab-btn bg-tarjeta text-gray-300 text-sm font-semibold px-4 py-2 rounded-lg">Barra</button>
+        <button id="tab-barra" class="tab-btn bg-tarjeta text-texto/60 text-sm font-semibold px-4 py-2 rounded-lg">Barra</button>
     </div>
 
     <div id="lista-productos" class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-6"></div>
 
     <div class="bg-tarjeta rounded-lg p-4">
-        <h2 class="text-white font-semibold mb-3">Pedido actual</h2>
+        <h2 class="text-texto font-semibold mb-3">Pedido actual</h2>
         <div id="lista-pedido" class="space-y-2 mb-3"></div>
-    <div class="flex justify-between items-center border-t border-gray-700 pt-3">
-        <span class="text-gray-300">Total</span>
-        <span id="total-pedido" class="text-white text-xl font-bold">$0</span>
+    <div class="flex justify-between items-center border-t border-texto/20 pt-3">
+        <span class="text-texto/60">Total</span>
+        <span id="total-pedido" class="text-texto text-xl font-bold">$0</span>
     </div>
         <button id="btn-enviar" class="bg-libre text-white font-semibold w-full py-2 rounded-lg mt-4 hover:opacity-90 transition">
         Enviar Pedido
@@ -66,16 +66,16 @@ export async function renderPantallaPedido(
     const totalAnterior = todosLosItems.reduce((acc: number, item: any) => acc + Number(item.precio) * item.cantidad, 0);
 
     cajaAnteriores.innerHTML = `
-            <h2 class="text-white font-semibold mb-2">Ya pedido en esta mesa</h2>
+            <h2 class="text-texto font-semibold mb-2">Ya pedido en esta mesa</h2>
             ${todosLosItems.map((item: any) => `
-        <div class="flex justify-between text-sm text-gray-300">
+        <div class="flex justify-between text-sm text-texto/60">
             <span>${item.cantidad}x ${item.producto}
             <span class="ml-2 text-xs px-2 py-0.5 rounded-full ${item.listo ? "bg-libre/20 text-libre" : "bg-porcobrar/20 text-porcobrar"}">${item.listo ? "Listo" : "Pendiente"}</span>
             </span>
             <span>$${(Number(item.precio) * item.cantidad).toLocaleString("es-CL")}</span>
         </div>
     `).join("")}
-        <div class="flex justify-between text-sm text-gray-400 border-t border-gray-700 mt-2 pt-2">
+        <div class="flex justify-between text-sm text-texto/60 border-t border-texto/20 mt-2 pt-2">
             <span>Subtotal ya pedido</span>
             <span>$${totalAnterior.toLocaleString("es-CL")}</span>
         </div>
@@ -106,10 +106,10 @@ function pintarProductos() {
     listaProductos.innerHTML = filtrados
         .map(
         (p) => `
-                <div class="bg-tarjeta rounded-lg p-3 flex justify-between items-center border-l-2 border-gray-700">
+                <div class="bg-tarjeta rounded-lg p-3 flex justify-between items-center border-l-2 border-texto/20">
         <div>
-            <p class="text-white text-sm font-medium">${p.nombre}</p>
-            <p class="text-gray-400 text-xs">$${Number(p.precio).toLocaleString("es-CL")}</p>
+            <p class="text-texto text-sm font-medium">${p.nombre}</p>
+            <p class="text-texto/60 text-xs">$${Number(p.precio).toLocaleString("es-CL")}</p>
         </div>
             <button data-id="${p.id}" class="btn-agregar-producto bg-libre text-white w-8 h-8 rounded-full font-bold">+</button>
         </div>`
@@ -127,7 +127,7 @@ function pintarProductos() {
 
 function pintarPedido() {
     if (pedidoActual.size === 0) {
-        listaPedido.innerHTML = `<p class="text-gray-500 text-sm">Sin productos aún</p>`;
+        listaPedido.innerHTML = `<p class="text-texto/60 text-sm">Sin productos aún</p>`;
         totalPedido.textContent = "$0";
         return;
     }
@@ -148,7 +148,7 @@ function pintarPedido() {
         <div class="mb-3">
             <div class="flex justify-between items-center mb-1">
             <span class="text-xs font-semibold uppercase tracking-wide ${colorClase}">${titulo}</span>
-            <span class="text-xs text-gray-400">$${subtotal.toLocaleString("es-CL")}</span>
+            <span class="text-xs text-texto/60">$${subtotal.toLocaleString("es-CL")}</span>
             </div>
             ${items
             .map(
@@ -156,9 +156,9 @@ function pintarPedido() {
             <div class="flex justify-between items-center text-sm mb-1">
                 <div class="flex items-center gap-2">
                 <button data-id="${it.id}" class="btn-restar bg-gray-700 hover:bg-gray-600 text-white w-6 h-6 rounded-full text-xs">−</button>
-                <span class="text-gray-300">${it.cantidad}x ${it.producto.nombre}</span>
+                <span class="text-texto/60">${it.cantidad}x ${it.producto.nombre}</span>
                 </div>
-                <span class="text-white">$${(Number(it.producto.precio) * it.cantidad).toLocaleString("es-CL")}</span>
+                <span class="text-texto">$${(Number(it.producto.precio) * it.cantidad).toLocaleString("es-CL")}</span>
             </div>`
             )
             .join("")}
@@ -190,14 +190,14 @@ function pintarPedido() {
 tabCocina.addEventListener("click", () => {
     estacionActiva = "cocina";
     tabCocina.className = "tab-btn bg-libre text-white text-sm font-semibold px-4 py-2 rounded-lg";
-    tabBarra.className = "tab-btn bg-tarjeta text-gray-300 text-sm font-semibold px-4 py-2 rounded-lg";
+    tabBarra.className = "tab-btn bg-tarjeta text-texto/60 text-sm font-semibold px-4 py-2 rounded-lg";
     pintarProductos();
 });
 
 tabBarra.addEventListener("click", () => {
     estacionActiva = "barra";
     tabBarra.className = "tab-btn bg-libre text-white text-sm font-semibold px-4 py-2 rounded-lg";
-    tabCocina.className = "tab-btn bg-tarjeta text-gray-300 text-sm font-semibold px-4 py-2 rounded-lg";
+    tabCocina.className = "tab-btn bg-tarjeta text-texto/60 text-sm font-semibold px-4 py-2 rounded-lg";
     pintarProductos();
 });
 
