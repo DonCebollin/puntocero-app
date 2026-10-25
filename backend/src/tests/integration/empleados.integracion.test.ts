@@ -1,28 +1,16 @@
 import "dotenv/config";
-import { describe, it, expect, beforeAll, afterAll} from "vitest";
+import { describe, it, expect} from "vitest";
 import request from "supertest";
 import express from "express";
 import { empleadosRoutes } from "../../routes/empleados.routes";
-import { crearEmpleado } from "../../models/Empleado";
-import { pool } from "../../config/database";
+import { prepararEmpleadoDePrueba } from "../helpers/empleado.helper";
 
 const app = express();
 app.use(express.json());
 app.use("/api/empleados", empleadosRoutes());
 
-const usuario = "test_" + Date.now();
-const password = "clave1234";
+const { usuario, password } = prepararEmpleadoDePrueba();
 
-beforeAll(async () => {
-    await crearEmpleado("Empleado test", usuario, password, "garzon");
-});
-
-afterAll(async() => {
-    await pool.query("DELETE FROM empleados WHERE usuario = ?", [usuario]);
-    await pool.end();
-});
-
-//lo ideal seria que el beforeall y afterall esten en un archivo aparte y yo solo los llame
 describe("POST /api/empleados/login", () => {
     it("devuelve 200 con token y empleado si las credenciales son correctas", async () => {
         const res = await request(app)
