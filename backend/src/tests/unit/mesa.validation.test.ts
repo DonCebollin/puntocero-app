@@ -1,6 +1,5 @@
 import { describe, expect, it } from "vitest";
 import { actualizarEstadoSchema, crearMesaSchema } from "../../validations/mesa.validation"; 
-import { date } from "zod";
 
 const camposConError = ( r: {
     success: boolean;
@@ -33,4 +32,21 @@ describe("Validacion de mesas - Pruebas Unitarias", () => {
         expect(campos).toContain("estado");
         expect(campos).toHaveLength(1);
     });
+
+    it("debe rechazar un numero de mesa decimal, negativo o texto", () => {
+        expect(camposConError(crearMesaSchema.safeParse({ numero: 1.5, zona_id: 1}))).toContain("numero");
+        expect(camposConError(crearMesaSchema.safeParse({ numero: -3, zona_id: 1}))).toContain("numero");
+        expect(camposConError(crearMesaSchema.safeParse({ numero: "abcd", zona_id: 1}))).toContain("numero");
+    });
+
+    it("debe rechazar una mesa sin zona", () => {
+        const resultado = crearMesaSchema.safeParse({ numero: 5});
+        const campos = camposConError(resultado);
+        
+        expect(resultado.success).toBe(false);
+        expect(campos).toContain("zona_id");
+        expect(campos).not.toContain("numero");
+    });
+
+
 });
