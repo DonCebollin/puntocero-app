@@ -3,7 +3,7 @@ import { describe, it, expect} from "vitest";
 import request from "supertest";
 import express from "express";
 import { empleadosRoutes } from "../../routes/empleados.routes";
-import { prepararEmpleadoDePrueba } from "../helpers/empleado.helper";
+import { prepararEmpleadoDePrueba } from "./general.helper";
 
 const app = express();
 app.use(express.json());
