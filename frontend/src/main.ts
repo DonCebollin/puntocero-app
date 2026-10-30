@@ -5,6 +5,7 @@ import { renderPantallaRegistro } from "./pages/registro";
 import { renderPantallaCola } from "./pages/cola";
 import { haySesionActiva, obtenerEmpleadoActual } from "./services/auth";
 import { mostrarBotonTema } from "./services/tema";
+import { mostrarBotonModoFacil } from "./services/modoFacil";
 
 const app = document.getElementById("app");
 
@@ -36,4 +37,7 @@ if(app) {
     mostrarLogin();
   }
 }
+
+mostrarBotonTema();
+mostrarBotonModoFacil();
 

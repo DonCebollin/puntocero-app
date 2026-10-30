@@ -14,9 +14,6 @@ html.claro {
   --c-texto: #0f172a;
 }
 
-
-
-
 @theme inline {
   --color-superficie: var(--c-superficie);
   --color-tarjeta: var(--c-tarjeta);
@@ -29,4 +26,47 @@ html.claro {
 body {
   background: var(--c-superficie);
   color: var(--c-texto);
+}
+
+html.facil {
+  font-size: 125%;
+}
+
+html.facil button,
+html.facil select,
+html.facil input {
+  min-height: 3 rem;
+}
+
+html.facil button {
+  min-width: 3rem;
+}
+
+html.facil [class*="text-texto/"] {
+  color : var(--color-texto) !important;
+}
+
+html.facil #btn-cerrar-sesion {
+  background-color: #2563eb;
+  color: #ffffff;
+  font-weight: 700;
+  border: 2px solid #ffffff;
+}
+
+html.facil #btn-cerrar-sesion:hover {
+  background-color: #1d4ed8;
+}
+
+html.facil #btn-volver {
+  background-color: #2563eb;
+  color: #ffffff !important;
+  font-size: 1.25rem;
+  font-weight: 700;
+  padding: 0.5rem 1.25rem;
+  border-radius: 0.5rem;
+  border: 2px solid #ffffff;
+}
+
+html.facil #btn-volver:hover {
+  background-color: #1d4ed8;
 }
