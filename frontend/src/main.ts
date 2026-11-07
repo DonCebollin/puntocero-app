@@ -4,8 +4,8 @@ import { renderPantallaLogin } from "./pages/login";
 import { renderPantallaRegistro } from "./pages/registro";
 import { renderPantallaCola } from "./pages/cola";
 import { haySesionActiva, obtenerEmpleadoActual } from "./services/auth";
-import { mostrarBotonTema } from "./services/tema";
-import { mostrarBotonModoFacil } from "./services/modoFacil";
+import { iniciarTema } from "./services/tema";
+import { iniciarModoFacil } from "./services/modoFacil";
 
 const app = document.getElementById("app");
 
@@ -28,7 +28,8 @@ function mostrarRegistro() {
   if(app) renderPantallaRegistro(app, mostrarLogin, mostrarLogin);
 }
 
-mostrarBotonTema();
+iniciarTema();
+iniciarModoFacil();
 
 if(app) {
   if(haySesionActiva()) {
@@ -37,7 +38,3 @@ if(app) {
     mostrarLogin();
   }
 }
-
-mostrarBotonTema();
-mostrarBotonModoFacil();
-

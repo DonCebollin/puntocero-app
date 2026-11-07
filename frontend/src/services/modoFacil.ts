@@ -5,7 +5,7 @@ function aplicar(activo: boolean) {
 }
 
 function leer(): boolean {
-    try{
+    try {
         return localStorage.getItem(CLAVE) === "1";
     } catch {
         return false;
@@ -18,17 +18,20 @@ function guardar(activo: boolean) {
     } catch {}
 }
 
-export function mostrarBotonModoFacil(): void {
+export function iniciarModoFacil(): void {
+    aplicar(leer());
+}
+
+export function crearBotonModoFacil(): HTMLButtonElement {
     let activo = leer();
-    aplicar(activo);
 
     const boton = document.createElement("button");
     boton.id = "btn-modo-facil";
-    boton.className = "fixed bottom-4 left-4 z-50 bg-libre text-white font-semibold px-4 py-2 rounded-full shadow-lg";
-    
+
     function pintar() {
-    boton.textContent = activo ? "Modo facil: activado" : "Modo facil";
-    boton.setAttribute("aria-pressed", String(activo));
+        boton.className = `text-white text-sm font-semibold px-4 py-2 rounded-lg hover:opacity-90 transition ${activo ? "bg-libre" : "bg-gray-600"}`;
+        boton.textContent = activo ? "Modo fácil: activado" : "Modo fácil";
+        boton.setAttribute("aria-pressed", String(activo));
     }
     pintar();
 
@@ -38,6 +41,5 @@ export function mostrarBotonModoFacil(): void {
         guardar(activo);
         pintar();
     });
-
-    document.body.appendChild(boton);
+    return boton;
 }

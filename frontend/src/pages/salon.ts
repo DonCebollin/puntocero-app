@@ -4,6 +4,8 @@ import { cerrarSesion } from "../services/auth";
 import { renderPantallaPedido } from "./pedido";
 import { obtenerEmpleadoActual } from "../services/auth";
 import { mostrarNotificacion, mostrarConfirmacion } from "../services/ui";
+import { crearBotonTema } from "../services/tema";
+import { crearBotonModoFacil } from "../services/modoFacil";
 
 const colorBorde: Record<Mesa ["estado"], string> = {
   libre: "border-libre",
@@ -34,9 +36,10 @@ export async function renderPantallaSalon(contenedor: HTMLElement): Promise<void
     const esAdmin = empleado?.rol === "administrador";
     contenedor.innerHTML = `
     <div class="min-h-screen bg-superficie p-4">
-      <div class="flex items-center justify-between mb-4">
+      <div class="flex items-center justify-between mb-4 flex-wrap gap-2">
         <h1 class="text-2xl font-bold text-texto">Punto Cero — Plano de Salón</h1>
-        <div class="flex gap-2">
+        <div class="flex gap-2 flex-wrap items-center">
+          <div id="ajustes-slot" class="flex gap-2"></div>
           ${esAdmin ? `
           <button id="btn-agregar-mesa" class="bg-libre text-white text-sm font-semibold px-4 py-2 rounded-lg hover:opacity-90 transition">
             + Agregar Mesa
@@ -57,6 +60,10 @@ export async function renderPantallaSalon(contenedor: HTMLElement): Promise<void
   const formularioContainer = contenedor.querySelector("#formulario-container") as HTMLElement;
   const btnAgregar = contenedor.querySelector("#btn-agregar-mesa") as HTMLButtonElement | null;
   const btnCerrarSesion = contenedor.querySelector("#btn-cerrar-sesion") as HTMLButtonElement;
+  
+  const slot = contenedor.querySelector("#ajustes-slot") as HTMLElement;
+  slot.append(crearBotonTema(), crearBotonModoFacil());
+  
   btnCerrarSesion.addEventListener("click", () => {
     cerrarSesion();
     window.location.reload();
