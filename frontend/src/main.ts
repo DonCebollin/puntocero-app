@@ -6,12 +6,14 @@ import { renderPantallaCola } from "./pages/cola";
 import { haySesionActiva, obtenerEmpleadoActual } from "./services/auth";
 import { iniciarTema } from "./services/tema";
 import { iniciarModoFacil } from "./services/modoFacil";
+import { iniciarAvisos } from "./services/notificaciones";
 
 const app = document.getElementById("app");
 
 function mostrarPantallaPrincipal() {
   const empleado = obtenerEmpleadoActual();
   if (!app) return;
+  iniciarAvisos();
 
   if (empleado?.rol === "cocina" || empleado?.rol === "barra") {
     renderPantallaCola(app, empleado.rol);
