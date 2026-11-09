@@ -25,17 +25,19 @@ export async function renderPantallaPedido(
     <div class="bg-tarjeta rounded-lg p-4">
         <h2 class="text-texto font-semibold mb-3">Pedido actual</h2>
         <div id="lista-pedido" class="space-y-2 mb-3"></div>
-    <div class="flex justify-between items-center border-t border-texto/20 pt-3">
-        <span class="text-texto/60">Total</span>
-        <span id="total-pedido" class="text-texto text-xl font-bold">$0</span>
-    </div>
-        <button id="btn-enviar" class="bg-libre text-white font-semibold w-full py-2 rounded-lg mt-4 hover:opacity-90 transition">
-        Enviar Pedido
-        </button>
-        ${mesa.estado !== "libre" ? `
-        <button id="btn-cerrar-cuenta" class="bg-porcobrar text-white font-semibold w-full py-2 rounded-lg mt-2 hover:opacity-90 transition">
-        Cerrar Cuenta y Cobrar
-        </button>` : ''}
+        <div class="flex justify-between items-center border-t border-texto/20 pt-3">
+            <span class="text-texto/60">Total</span>
+            <span id="total-pedido" class="text-texto text-xl font-bold">$0</span>
+        </div>
+        <div class="grid grid-cols-2 gap-3 mt-4">
+            <button id="btn-enviar" class="bg-libre text-white font-bold h-16 sm:h-14 px-2 rounded-2xl text-lg leading-tight hover:opacity-90 active:scale-95 transition ${mesa.estado !== "libre" ? "" : "col-span-2"}">
+                Enviar Pedido
+            </button>
+            ${mesa.estado !== "libre" ? `
+            <button id="btn-cerrar-cuenta" class="bg-porcobrar text-white font-bold h-16 sm:h-14 px-2 rounded-2xl text-lg leading-tight hover:opacity-90 active:scale-95 transition">
+                Cerrar Cuenta y Cobrar
+            </button>` : ''}
+        </div>
     </div>
     </div>
 `;

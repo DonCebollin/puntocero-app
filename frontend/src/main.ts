@@ -4,13 +4,16 @@ import { renderPantallaLogin } from "./pages/login";
 import { renderPantallaRegistro } from "./pages/registro";
 import { renderPantallaCola } from "./pages/cola";
 import { haySesionActiva, obtenerEmpleadoActual } from "./services/auth";
-import { mostrarBotonTema } from "./services/tema";
+import { iniciarTema } from "./services/tema";
+import { iniciarModoFacil } from "./services/modoFacil";
+import { iniciarAvisos } from "./services/notificaciones";
 
 const app = document.getElementById("app");
 
 function mostrarPantallaPrincipal() {
   const empleado = obtenerEmpleadoActual();
   if (!app) return;
+  iniciarAvisos();
 
   if (empleado?.rol === "cocina" || empleado?.rol === "barra") {
     renderPantallaCola(app, empleado.rol);
@@ -27,7 +30,8 @@ function mostrarRegistro() {
   if(app) renderPantallaRegistro(app, mostrarLogin, mostrarLogin);
 }
 
-mostrarBotonTema();
+iniciarTema();
+iniciarModoFacil();
 
 if(app) {
   if(haySesionActiva()) {
@@ -36,4 +40,3 @@ if(app) {
     mostrarLogin();
   }
 }
-

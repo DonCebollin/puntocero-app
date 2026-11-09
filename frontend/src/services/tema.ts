@@ -7,14 +7,18 @@ function aplicar(claro : boolean) {
     document.documentElement.classList.toggle("claro", claro);
 }
 
-export function mostrarBotonTema() {
+export function iniciarTema() {
     let claro = false;
-    try{ claro = localStorage.getItem(CLAVE) === "claro"; } catch{}
+    try { claro = localStorage.getItem(CLAVE) === "claro"; } catch {}
     aplicar(claro);
+}
+
+export function crearBotonTema(): HTMLButtonElement {
+    let claro = false;
+    try { claro = localStorage.getItem(CLAVE) === "claro"; } catch {}
 
     const btn = document.createElement("button");
-    btn.className =
-        "fixed bottom-4 right-4 z-50 w-12 h-12 rounded-full bg-tarjeta text-texto shadow-lg text-xl";
+    btn.className = "flex items-center bg-gray-600 text-white text-sm font-semibold px-4 py-2 rounded-lg hover:opacity-90 transition";
     btn.setAttribute("aria-label", "Cambiar tema");
     const pintar = () => (btn.innerHTML = claro ? ICONO_LUNA : ICONO_SOL);
     pintar();
@@ -22,9 +26,8 @@ export function mostrarBotonTema() {
     btn.addEventListener("click", () => {
         claro = !claro;
         aplicar(claro);
-        try{ localStorage.setItem(CLAVE, claro ? "claro" : "oscuro"); } catch {
-            pintar();
-        }
+        try { localStorage.setItem(CLAVE, claro ? "claro" : "oscuro"); } catch {}
+        pintar();
     });
-    document.body.appendChild(btn);
+    return btn;
 }

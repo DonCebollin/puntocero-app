@@ -3,8 +3,6 @@ import { Server } from "socket.io";
 import * as PedidoModel from "../models/Pedido";
 import { crearPedidoSchema } from "../validations/pedido.validation";
 import * as MesaModel from "../models/Mesa";
-import { error } from "node:console";
-import { tr } from "zod/locales";
 
 export function crearPedidosController(io: Server) {
   return {
@@ -99,7 +97,11 @@ export function crearPedidosController(io: Server) {
           itemId: item.id,
           pedidoId: item.pedido_id,
           mesaId: item.mesa_id,
-          estacion: item.estacion
+          mesaNumero: item.mesa_numero,
+          estacion: item.estacion,
+          producto: item.producto,
+          cantidad: item.cantidad,
+          garzonId: item.empleado_id
         });
         res.json({ ok: true});
       } catch (error) {

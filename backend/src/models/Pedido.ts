@@ -1,3 +1,4 @@
+
 import { pool } from "../config/database";
 import { ResultSetHeader, RowDataPacket } from "mysql2";
 
@@ -132,7 +133,8 @@ export async function obtenerItemsPendientes(estacion: "cocina" | "barra"): Prom
         JOIN pedidos p ON p.id = ip.pedido_id
         JOIN mesas m ON m.id = p.mesa_id
         LEFT JOIN empleados e ON e.id = p.empleado_id
-        WHERE ip.estacion = ? AND ip.listo = FALSE AND p.cerrado = FALSE            ORDER BY p.creado_en ASC, ip.id ASC`,
+        WHERE ip.estacion = ? AND ip.listo = FALSE AND p.cerrado = FALSE            
+        ORDER BY p.creado_en ASC, ip.id ASC`,
         [estacion]
         );
         return fila as ItemPendiente[];
@@ -140,9 +142,11 @@ export async function obtenerItemsPendientes(estacion: "cocina" | "barra"): Prom
 
 export async function marcarItemListo(itemId: number) {
     const [filas] = await pool.query<RowDataPacket[]>(
-        `SELECT ip.id, ip.pedido_id, ip.estacion, p.mesa_id
+        `SELECT ip.id, ip.pedido_id, ip.estacion, ip.producto, ip.cantidad,
+            p.mesa_id, p.empleado_id, m.numero AS mesa_numero
         FROM items_pedido ip
         JOIN pedidos p ON p.id = ip.pedido_id
+        JOIN mesas m ON m.id = p.mesa_id
         WHERE ip.id = ?`,
         [itemId]
     );
@@ -151,4 +155,15 @@ export async function marcarItemListo(itemId: number) {
 
     await pool.query("UPDATE items_pedido SET listo = TRUE WHERE id = ?", [itemId]);
     return item;
+}
+
+export async function contarItemsPendientesMesa(mesaId: number): Promise<number> {
+    const [filas] = await pool.query<RowDataPacket[]>(
+        `SELECT COUNT(*) AS pendientes
+        FROM items_pedido ip
+        JOIN pedidos p ON p.id = ip.pedido_id
+        WHERE p.mesa_id = ? AND p.cerrado = FALSE AND ip.listo = FALSE`,
+        [mesaId]
+    );
+    return Number(filas[0].pendientes);
 }
