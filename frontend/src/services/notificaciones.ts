@@ -18,9 +18,9 @@ function desbloquearAudio() {
 }
 
 
-function tocarSonido(tipo: "pedido" | "listo") {
+function tocarSonido(tipo: "pedido" | "listo") {// solo acepta estos 2 valores
     const ctx = obtenerContexto();
-    if(ctx.state === "suspended") ctx.resume();
+    if(ctx.state === "suspended") ctx.resume(); //para obtener sonido, si desactivado se reactiva
     const notas = tipo === "pedido" ? [660, 880] : [880, 660, 880];
 
     notas.forEach((frecuencia, i) => {

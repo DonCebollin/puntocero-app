@@ -133,7 +133,8 @@ export async function obtenerItemsPendientes(estacion: "cocina" | "barra"): Prom
         JOIN pedidos p ON p.id = ip.pedido_id
         JOIN mesas m ON m.id = p.mesa_id
         LEFT JOIN empleados e ON e.id = p.empleado_id
-        WHERE ip.estacion = ? AND ip.listo = FALSE AND p.cerrado = FALSE            ORDER BY p.creado_en ASC, ip.id ASC`,
+        WHERE ip.estacion = ? AND ip.listo = FALSE AND p.cerrado = FALSE            
+        ORDER BY p.creado_en ASC, ip.id ASC`,
         [estacion]
         );
         return fila as ItemPendiente[];
