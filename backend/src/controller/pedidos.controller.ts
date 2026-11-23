@@ -35,6 +35,9 @@ export function crearPedidosController(io: Server) {
 
         res.status(201).json(pedido);
       } catch (error) {
+          if (error instanceof PedidoModel.ProductoNoDisponibleError) {
+          return res.status(409).json({ error: error.message });
+        }
         console.error(error);
         res.status(500).json({ error: "Error al crear el pedido" });
       }

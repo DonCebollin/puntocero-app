@@ -34,6 +34,13 @@ export interface ItemPendiente {
     garzon: string | null;
 }
 
+export class ProductoNoDisponibleError extends Error {
+    constructor(nombre: string) {
+        super(`El producto ${nombre} no está disponible`);
+        this.name = "ProductoNoDisponibleError";
+    }
+}
+
 export async function crearPedido(mesaId: number, items: ItemPedidoEntrada[], empleadoId: number | null = null): Promise<number> {
     const conexion = await pool.getConnection();
 
@@ -48,13 +55,16 @@ export async function crearPedido(mesaId: number, items: ItemPedidoEntrada[], em
 
         for(const item of items) {
             const [filasProducto] = await conexion.query<RowDataPacket[]>(
-                "SELECT nombre, precio, estacion FROM productos WHERE id = ?",
+                "SELECT nombre, precio, estacion, disponible FROM productos WHERE id = ?",
                 [item.producto_id]
             );
             const producto = filasProducto[0];
 
             if(!producto) {
                 throw new Error(`El producto con id ${item.producto_id} no existe`);
+            }
+            if(!producto.disponible) {
+                throw new ProductoNoDisponibleError(producto.nombre);
             }
 
             await conexion.query(

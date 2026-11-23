@@ -25,7 +25,7 @@ app.use(express.json());
 app.use("/api/mesas", mesasRoutes(io));
 app.use("/api/zonas", zonasRoutes());
 app.use("/api/empleados", empleadosRoutes());
-app.use("/api/productos", productosRoutes());
+app.use("/api/productos", productosRoutes(io));
 app.use("/api/pedidos", pedidosRoutes(io));
 
 const PUERTO = process.env.PORT || 3000;
