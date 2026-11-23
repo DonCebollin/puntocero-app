@@ -3,6 +3,25 @@ import { obtenerProductos, crearPedido, actualizarEstadoMesa, obtenerPedidosPorM
 import { mostrarConfirmacion, mostrarNotificacion } from "../services/ui";
 import { socket } from "../services/socket";
 
+function normalizar(texto: string): string {
+    return texto
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .toLowerCase()
+        .trim();
+}
+
+function coincide(nombre: string, busqueda: string): boolean {
+    const base = normalizar(nombre);
+    return normalizar(busqueda)
+        .split(/\s+/)
+        .filter(Boolean)
+        .every((palabra) => {
+            const variantes = [palabra, palabra.replace(/(es|s)$/, "")];
+            return variantes.some((v) => v.length > 0 && base.includes(v));
+        });
+}
+
 export async function renderPantallaPedido(
     contenedor: HTMLElement,
     mesa: Mesa,
@@ -20,6 +39,8 @@ export async function renderPantallaPedido(
         <button id="tab-barra" class="tab-btn bg-tarjeta text-texto/60 text-sm font-semibold px-4 py-2 rounded-lg">Barra</button>
     </div>
 
+        <input id="buscador" type="search" placeholder="Buscar producto..." autocomplete="off" class="w-full 
+        bg-tarjeta text-texto placeholder:text-texto/50 border border-texto/20 focus:border-libre outline-none rounded-lg px-4 py-3 mb-4" />
     <div id="lista-productos" class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-6"></div>
 
     <div class="bg-tarjeta rounded-lg p-4">
@@ -50,6 +71,7 @@ export async function renderPantallaPedido(
     const btnCerrarCuenta = contenedor.querySelector("#btn-cerrar-cuenta") as HTMLButtonElement | null;
     const tabCocina = contenedor.querySelector("#tab-cocina") as HTMLButtonElement;
     const tabBarra = contenedor.querySelector("#tab-barra") as HTMLButtonElement;
+    const buscador = contenedor.querySelector("#buscador") as HTMLInputElement;
     
 
     btnVolver.addEventListener("click", alVolver);
@@ -104,14 +126,23 @@ function alCambiarItem(data: { mesaId: number }) {
 socket.on("item:listo", alCambiarItem);
 
 function pintarProductos() {
-    const filtrados = productos.filter((p) => p.estacion === estacionActiva);
+    const texto = buscador.value.trim();
+    const filtrados = texto
+        ? productos.filter((p) => coincide(p.nombre, texto))
+        : productos.filter((p) => p.estacion === estacionActiva);
+
+    if (filtrados.length === 0) {
+        listaProductos.innerHTML = `<p class="text-texto/60 text-sm col-span-full">No se encontraron productos</p>`;
+        return;
+    }
+
     listaProductos.innerHTML = filtrados
         .map(
         (p) => `
                 <div class="bg-tarjeta rounded-lg p-3 flex justify-between items-center border-l-2 border-texto/20">
         <div>
             <p class="text-texto text-sm font-medium">${p.nombre}</p>
-            <p class="text-texto/60 text-xs">$${Number(p.precio).toLocaleString("es-CL")}</p>
+            <p class="text-texto/60 text-xs">$${Number(p.precio).toLocaleString("es-CL")}${texto ? ` · <span class="uppercase font-semibold ${p.estacion === "cocina" ? "text-libre" : "text-porcobrar"}">${p.estacion}</span>` : ""}</p>
         </div>
             <button data-id="${p.id}" class="btn-agregar-producto bg-libre text-white w-8 h-8 rounded-full font-bold">+</button>
         </div>`
@@ -191,6 +222,7 @@ function pintarPedido() {
 
 tabCocina.addEventListener("click", () => {
     estacionActiva = "cocina";
+    buscador.value = "";
     tabCocina.className = "tab-btn bg-libre text-white text-sm font-semibold px-4 py-2 rounded-lg";
     tabBarra.className = "tab-btn bg-tarjeta text-texto/60 text-sm font-semibold px-4 py-2 rounded-lg";
     pintarProductos();
@@ -198,10 +230,13 @@ tabCocina.addEventListener("click", () => {
 
 tabBarra.addEventListener("click", () => {
     estacionActiva = "barra";
+    buscador.value = "";
     tabBarra.className = "tab-btn bg-libre text-white text-sm font-semibold px-4 py-2 rounded-lg";
     tabCocina.className = "tab-btn bg-tarjeta text-texto/60 text-sm font-semibold px-4 py-2 rounded-lg";
     pintarProductos();
 });
+
+buscador.addEventListener("input", pintarProductos);
 
 btnEnviar.addEventListener("click", async () => {
     if(pedidoActual.size === 0) {
