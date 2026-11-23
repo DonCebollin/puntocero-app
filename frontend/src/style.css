@@ -35,7 +35,7 @@ html.facil {
 html.facil button,
 html.facil select,
 html.facil input {
-  min-height: 3 rem;
+  min-height: 3rem;
 }
 
 html.facil button {
@@ -60,11 +60,13 @@ html.facil #btn-cerrar-sesion:hover {
 html.facil #btn-volver {
   background-color: #2563eb;
   color: #ffffff !important;
-  font-size: 1.25rem;
+  font-size: 1.1rem;
   font-weight: 700;
-  padding: 0.5rem 1.25rem;
+  padding: 0.5rem 1rem;
   border-radius: 0.5rem;
   border: 2px solid #ffffff;
+  white-space: nowrap;
+  flex-shrink: 0;
 }
 
 html.facil #btn-volver:hover {
