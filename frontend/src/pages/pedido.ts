@@ -1,7 +1,8 @@
 
-import { obtenerProductos, crearPedido, actualizarEstadoMesa, obtenerPedidosPorMesa, cerrarCuenta,  Mesa } from "../services/api";
+import { obtenerProductos, crearPedido, actualizarEstadoMesa, obtenerPedidosPorMesa, actualizarDisponibilidadProducto, cerrarCuenta,  Mesa } from "../services/api";
 import { mostrarConfirmacion, mostrarNotificacion } from "../services/ui";
 import { socket } from "../services/socket";
+import { obtenerEmpleadoActual } from "../services/auth";
 
 function normalizar(texto: string): string {
     return texto
@@ -72,7 +73,7 @@ export async function renderPantallaPedido(
     const tabCocina = contenedor.querySelector("#tab-cocina") as HTMLButtonElement;
     const tabBarra = contenedor.querySelector("#tab-barra") as HTMLButtonElement;
     const buscador = contenedor.querySelector("#buscador") as HTMLInputElement;
-    
+    const esAdmin = obtenerEmpleadoActual()?.rol === "administrador";
 
     btnVolver.addEventListener("click", alVolver);
 
@@ -161,18 +162,36 @@ function pintarProductos() {
             <p class="text-texto text-sm font-medium">${p.nombre}</p>
             <p class="text-texto/60 text-xs">$${Number(p.precio).toLocaleString("es-CL")}${texto ? ` · <span class="uppercase font-semibold ${p.estacion === "cocina" ? "text-libre" : "text-porcobrar"}">${p.estacion}</span>` : ""}</p>
         </div>
-            ${p.disponible
-                ? `<button data-id="${p.id}" class="btn-agregar-producto bg-libre text-white w-8 h-8 rounded-full font-bold">+</button>`
-                : `<span class="text-xs font-semibold uppercase text-porcobrar">Agotado</span>`}
+            <div class="flex items-center gap-2">
+                ${esAdmin
+                    ? `<button data-id="${p.id}" class="btn-disponibilidad text-xs px-2 py-1 rounded border border-texto/30 text-texto/70 hover:text-texto">${p.disponible ? "Agotar" : "Habilitar"}</button>`
+                    : ""}
+                ${p.disponible
+                    ? `<button data-id="${p.id}" class="btn-agregar-producto bg-libre text-white w-8 h-8 rounded-full font-bold">+</button>`
+                    : `<span class="text-xs font-semibold uppercase text-porcobrar">Agotado</span>`}
+            </div>
         </div>`
     )
     .join("");
     
     listaProductos.querySelectorAll<HTMLButtonElement>(".btn-agregar-producto").forEach((btn) => {
-        btn.addEventListener("click", () =>{
+        btn.addEventListener("click", () => {
             const id = Number(btn.dataset.id);
             pedidoActual.set(id, (pedidoActual.get(id) || 0) + 1);
             pintarPedido();
+        });
+    });
+
+    listaProductos.querySelectorAll<HTMLButtonElement>(".btn-disponibilidad").forEach((btn) => {
+        btn.addEventListener("click", async () => {
+            const id = Number(btn.dataset.id);
+            const producto = productos.find((p) => p.id === id);
+            if (!producto) return;
+            try {
+                await actualizarDisponibilidadProducto(id, !producto.disponible);
+            } catch (error: any) {
+                mostrarNotificacion(error.message, "error");
+            }
         });
     });
 }
