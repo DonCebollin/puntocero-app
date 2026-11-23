@@ -85,13 +85,6 @@ export function crearMesasController(io: Server) {
             try {
                 const { id } = req.params;
 
-                const pendientes = await PedidoModel.contarItemsPendientesMesa(Number(id));
-                if(pendientes > 0) {
-                    return res.status(409).json({
-                        error:  `Faltan ${pendientes} producto(s) por entregar. No se puede cerrar la cuenta.`
-                    });
-                }
-
                 const total = await PedidoModel.cerrarCuentaMesa(Number(id));
 
                 await MesaModel.actualizarEstadoMesa(Number(id), "libre");

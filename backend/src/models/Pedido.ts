@@ -156,14 +156,3 @@ export async function marcarItemListo(itemId: number) {
     await pool.query("UPDATE items_pedido SET listo = TRUE WHERE id = ?", [itemId]);
     return item;
 }
-
-export async function contarItemsPendientesMesa(mesaId: number): Promise<number> {
-    const [filas] = await pool.query<RowDataPacket[]>(
-        `SELECT COUNT(*) AS pendientes
-        FROM items_pedido ip
-        JOIN pedidos p ON p.id = ip.pedido_id
-        WHERE p.mesa_id = ? AND p.cerrado = FALSE AND ip.listo = FALSE`,
-        [mesaId]
-    );
-    return Number(filas[0].pendientes);
-}
