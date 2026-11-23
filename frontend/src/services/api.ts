@@ -97,7 +97,7 @@ export async function eliminarMesa(id: number): Promise<void> {
 
 
 export interface Producto {
-  id: Number;
+  id: number;
   nombre: string;
   precio: number;
   categoria: "comida" | "bebida";
@@ -108,6 +108,15 @@ export interface Producto {
 export async function obtenerProductos(): Promise<Producto[]> {
   const respuesta = await fetch(`${BACKEND_URL}/api/productos`, {
     headers: headersConToken(),
+  });
+  return manejarRespuesta(respuesta);
+}
+
+export async function actualizarDisponibilidadProducto(id: number, disponible: boolean): Promise<Producto> {
+  const respuesta = await fetch(`${BACKEND_URL}/api/productos/${id}/disponibilidad`, {
+    method: "PATCH",
+    headers: headersConToken(),
+    body: JSON.stringify({ disponible }),
   });
   return manejarRespuesta(respuesta);
 }

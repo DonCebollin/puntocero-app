@@ -125,6 +125,23 @@ function alCambiarItem(data: { mesaId: number }) {
 }
 socket.on("item:listo", alCambiarItem);
 
+function alCambiarProducto(data: { id: number; disponible: boolean }) {
+    if (!document.body.contains(cajaAnteriores)) {
+        socket.off("producto:actualizado", alCambiarProducto);
+        return;
+    }
+    const producto = productos.find((p) => p.id === data.id);
+    if (!producto) return;
+    producto.disponible = data.disponible;
+    if (!data.disponible && pedidoActual.has(data.id)) {
+        pedidoActual.delete(data.id);
+        mostrarNotificacion(`${producto.nombre} se agotó y se quitó del pedido`, "error");
+        pintarPedido();
+    }
+    pintarProductos();
+}
+socket.on("producto:actualizado", alCambiarProducto);
+
 function pintarProductos() {
     const texto = buscador.value.trim();
     const filtrados = texto
@@ -139,12 +156,14 @@ function pintarProductos() {
     listaProductos.innerHTML = filtrados
         .map(
         (p) => `
-                <div class="bg-tarjeta rounded-lg p-3 flex justify-between items-center border-l-2 border-texto/20">
+            <div class="bg-tarjeta rounded-lg p-3 flex justify-between items-center border-l-2 border-texto/20 ${p.disponible ? "" : "opacity-50"}">    
         <div>
             <p class="text-texto text-sm font-medium">${p.nombre}</p>
             <p class="text-texto/60 text-xs">$${Number(p.precio).toLocaleString("es-CL")}${texto ? ` · <span class="uppercase font-semibold ${p.estacion === "cocina" ? "text-libre" : "text-porcobrar"}">${p.estacion}</span>` : ""}</p>
         </div>
-            <button data-id="${p.id}" class="btn-agregar-producto bg-libre text-white w-8 h-8 rounded-full font-bold">+</button>
+            ${p.disponible
+                ? `<button data-id="${p.id}" class="btn-agregar-producto bg-libre text-white w-8 h-8 rounded-full font-bold">+</button>`
+                : `<span class="text-xs font-semibold uppercase text-porcobrar">Agotado</span>`}
         </div>`
     )
     .join("");
